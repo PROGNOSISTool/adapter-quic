@@ -268,8 +268,8 @@ func (a *Adapter) handleNewAbstractQuery(client *tcp.Client, query []string, wai
 	concreteInputs := []*ConcreteSymbol{}
 	concreteOutputs := []ConcreteSet{}
 	for _, message := range query {
-		a.outgoingResponse.Clear()
-		a.incomingPacketSet.Clear()
+		a.outgoingResponse = *NewAbstractSet()
+		a.incomingPacketSet = *NewConcreteSet()
 		a.outgoingPacket = nil
 		abstractSymbol := NewAbstractSymbolFromString(message)
 		abstractInputs = append(abstractInputs, abstractSymbol)
