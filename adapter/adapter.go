@@ -14,13 +14,13 @@ import (
 )
 
 type Adapter struct {
-	connection                *qt.Connection
-	http3                     bool
-	trace                     *qt.Trace
-	agents                    *agents.ConnectionAgents
-	server                    *tcp.Server
-	stop                      chan bool
-	Logger                    *log.Logger
+	connection             *qt.Connection
+	http3                  bool
+	trace                  *qt.Trace
+	agents                 *agents.ConnectionAgents
+	server                 *tcp.Server
+	stop                   chan bool
+	Logger                 *log.Logger
 
 	incomingLearnerSymbols qt.Broadcaster // Type: AbstractSymbol
 	incomingSulPackets     chan interface{}
@@ -47,7 +47,7 @@ func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 
 	adapter.outgoingPacket = nil
 	adapter.incomingPacketSet = *NewConcreteSet()
 	adapter.outgoingResponse = *NewAbstractSet()
-	adapter.oracleTable = *NewAbstractConcreteMap()
+	adapter.oracleTable = *ReadAbstractConcreteMap("oracleTable.json")
 
 	adapter.trace = qt.NewTrace("Adapter", 1, sulAddress)
 	adapter.trace.AttachTo(adapter.connection)
