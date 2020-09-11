@@ -34,10 +34,15 @@ type Adapter struct {
 func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 bool) (*Adapter, error) {
 	adapter := new(Adapter)
 
+	adapter.Logger = log.New(os.Stderr, "[ADAPTER] ", log.Lshortfile)
+	adapter.Logger.Printf("Adapter Address: %v", adapterAddress)
+	adapter.Logger.Printf("SUL Address: %v", sulAddress)
+	adapter.Logger.Printf("SUL Name: %v", sulName)
+	adapter.Logger.Printf("HTTP3: %v", http3)
+
 	adapter.incomingLearnerSymbols = qt.NewBroadcaster(1000)
 	adapter.http3 = http3
 	adapter.stop = make(chan bool, 1)
-	adapter.Logger = log.New(os.Stderr, "[ADAPTER] ", log.Lshortfile)
 	adapter.server = tcp.New(adapterAddress)
 
 	adapter.connection, _ = qt.NewDefaultConnection(sulAddress, sulName, nil, false, "hq", adapter.http3)
