@@ -12,22 +12,23 @@ import (
 type AbstractConcreteMap map[string]ConcreteOrderedPair
 
 func NewAbstractConcreteMap() *AbstractConcreteMap {
-	return new(AbstractConcreteMap)
+	acm := AbstractConcreteMap{}
+	return &acm
 }
 
 func ReadAbstractConcreteMap(filename string) *AbstractConcreteMap {
 	acm := NewAbstractConcreteMap()
 
-	fmt.Printf("Reading Oracle table...")
+	fmt.Printf("Reading Oracle table...\n")
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Printf("Failed to read JSON file: %v", err.Error())
+		fmt.Printf("Failed to read JSON file: %v\n", err.Error())
 		return acm
 	}
 
 	err = json.Unmarshal(content, acm)
 	if err != nil {
-		fmt.Printf("Failed to unmarshal JSON: %v", err.Error())
+		fmt.Printf("Failed to unmarshal JSON: %v\n", err.Error())
 	}
 
 	return acm
