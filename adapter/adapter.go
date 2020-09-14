@@ -191,7 +191,7 @@ func (a *Adapter) Run() {
 func (a *Adapter) Stop() {
 	a.trace.Complete(a.connection)
 	a.SaveTrace("trace.json")
-	_ = a.oracleTable.SaveToDisk("oracleTable.json")
+	_ = a.oracleTable.SaveToDisk("oracleTable.gob")
 	a.SaveOracleTable("oracleTable.json")
 	a.agents.Stop("SendingAgent")
 	a.agents.StopAll()

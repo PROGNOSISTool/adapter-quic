@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 )
@@ -29,7 +30,7 @@ func ReadAbstractConcreteMap(filename string) *AbstractConcreteMap {
 
 	dataDecoder := gob.NewDecoder(gobFile)
 	err = dataDecoder.Decode(acm)
-	if err != nil {
+	if err != nil && err != io.EOF {
 		fmt.Printf("Failed to decode GOB file: %v\n", err.Error())
 		return acm
 	}
