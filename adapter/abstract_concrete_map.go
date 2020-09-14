@@ -4,7 +4,7 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
-	mapset "github.com/deckarep/golang-set"
+	mapset "github.com/tiferrei/golang-set"
 	qt "github.com/tiferrei/quic-tracker"
 	"io"
 	"os"
@@ -30,7 +30,7 @@ func ReadAbstractConcreteMap(filename string) *AbstractConcreteMap {
 		fmt.Printf("Failed to open GOB file: %v\n", err.Error())
 		return acm
 	}
-	
+
 	gobRegister()
 	dataDecoder := gob.NewDecoder(gobFile)
 	err = dataDecoder.Decode(acm)

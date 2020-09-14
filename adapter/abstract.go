@@ -2,7 +2,7 @@ package adapter
 
 import (
 	"fmt"
-	mapset "github.com/deckarep/golang-set"
+	mapset "github.com/tiferrei/golang-set"
 	qt "github.com/tiferrei/quic-tracker"
 	"regexp"
 	"sort"

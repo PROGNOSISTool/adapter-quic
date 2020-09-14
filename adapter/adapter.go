@@ -3,7 +3,7 @@ package adapter
 import (
 	"encoding/json"
 	"fmt"
-	mapset "github.com/deckarep/golang-set"
+	mapset "github.com/tiferrei/golang-set"
 	qt "github.com/tiferrei/quic-tracker"
 	"github.com/tiferrei/quic-tracker/agents"
 	tcp "github.com/tiferrei/tcp_server"
