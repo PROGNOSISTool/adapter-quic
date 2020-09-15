@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"github.com/davecgh/go-spew/spew"
 	"io"
@@ -96,7 +97,7 @@ func (frame *VersionNegotiationPacket) MarshalJSON() ([]byte, error) {
 		Type: VersionNegotiationPacketJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *VersionNegotiationPacket) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -288,7 +289,7 @@ func (frame *InitialPacket) MarshalJSON() ([]byte, error) {
 		Type: InitialPacketJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *InitialPacket) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -340,7 +341,7 @@ func (frame *RetryPacket) MarshalJSON() ([]byte, error) {
 		Type: RetryPacketJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *RetryPacket) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -382,7 +383,7 @@ func (frame *HandshakePacket) MarshalJSON() ([]byte, error) {
 		Type: HandshakePacketJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *HandshakePacket) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -410,7 +411,7 @@ func (frame *ProtectedPacket) MarshalJSON() ([]byte, error) {
 		Type: ProtectedPacketJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *ProtectedPacket) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -457,7 +458,7 @@ func (frame *ZeroRTTProtectedPacket) MarshalJSON() ([]byte, error) {
 		Type: ZeroRTTProtectedPacketJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *ZeroRTTProtectedPacket) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -490,7 +491,7 @@ func (frame *StatelessResetPacket) MarshalJSON() ([]byte, error) {
 		Type: StatelessResetPacketJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *StatelessResetPacket) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
