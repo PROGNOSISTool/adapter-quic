@@ -86,17 +86,14 @@ type Envelope struct {
 	Message interface{}
 }
 
-func (p *Envelope) MarshalJSON() ([]byte, error) {
-	return json.Marshal(p)
-}
-
 func (p *Envelope) UnmarshalJSON(data []byte) error {
-	if err := json.Unmarshal(data, p); err != nil {
+	tempEnvelope := map[string]interface{}{}
+	if err := json.Unmarshal(data, &tempEnvelope); err != nil {
 		return err
 	}
 
 	msg := JSONTypeHandlers[p.Type]()
-	if err := ms.Decode(p.Message, msg); err != nil {
+	if err := ms.Decode(tempEnvelope["Message"], msg); err != nil {
 		return err
 	}
 

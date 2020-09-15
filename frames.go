@@ -3,6 +3,7 @@ package quictracker
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/google/go-cmp/cmp"
@@ -185,7 +186,7 @@ func (frame *PaddingFrame) MarshalJSON() ([]byte, error) {
 		Type: PaddingFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *PaddingFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -215,7 +216,7 @@ func (frame *PingFrame) MarshalJSON() ([]byte, error) {
 		Type: PingFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *PingFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -296,7 +297,7 @@ func (frame *AckFrame) MarshalJSON() ([]byte, error) {
 		Type: AckFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *AckFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -360,7 +361,7 @@ func (frame *AckECNFrame) MarshalJSON() ([]byte, error) {
 		Type: AckECNFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *AckECNFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -401,7 +402,7 @@ func (frame *ResetStream) MarshalJSON() ([]byte, error) {
 		Type: ResetStreamJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *ResetStream) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -440,7 +441,7 @@ func (frame *StopSendingFrame) MarshalJSON() ([]byte, error) {
 		Type: StopSendingFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *StopSendingFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -490,7 +491,7 @@ func (frame *CryptoFrame) MarshalJSON() ([]byte, error) {
 		Type: CryptoFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *CryptoFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -526,7 +527,7 @@ func (frame *NewTokenFrame) MarshalJSON() ([]byte, error) {
 		Type: NewTokenFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *NewTokenFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -596,7 +597,7 @@ func (frame *StreamFrame) MarshalJSON() ([]byte, error) {
 		Type: NewTokenFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *StreamFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -665,7 +666,7 @@ func (frame *MaxDataFrame) MarshalJSON() ([]byte, error) {
 		Type: MaxDataFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *MaxDataFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -696,7 +697,7 @@ func (frame *MaxStreamDataFrame) MarshalJSON() ([]byte, error) {
 		Type: MaxStreamDataFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *MaxStreamDataFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -741,7 +742,7 @@ func (frame *MaxStreamsFrame) MarshalJSON() ([]byte, error) {
 		Type: MaxStreamsFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *MaxStreamsFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -776,7 +777,7 @@ func (frame *DataBlockedFrame) MarshalJSON() ([]byte, error) {
 		Type: DataBlockedFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *DataBlockedFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -813,7 +814,7 @@ func (frame *StreamDataBlockedFrame) MarshalJSON() ([]byte, error) {
 		Type: StreamDataBlockedFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *StreamDataBlockedFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -858,7 +859,7 @@ func (frame *StreamsBlockedFrame) MarshalJSON() ([]byte, error) {
 		Type: StreamsBlockedFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *StreamsBlockedFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -901,7 +902,7 @@ func (frame *NewConnectionIdFrame) MarshalJSON() ([]byte, error) {
 		Type: NewConnectionIdFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *NewConnectionIdFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -941,7 +942,7 @@ func (frame *RetireConnectionId) MarshalJSON() ([]byte, error) {
 		Type: RetireConnectionIdJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *RetireConnectionId) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -976,7 +977,7 @@ func (frame *PathChallenge) MarshalJSON() ([]byte, error) {
 		Type: PathChallengeJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *PathChallenge) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -1011,7 +1012,7 @@ func (frame *PathResponse) MarshalJSON() ([]byte, error) {
 		Type: PathResponseJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *PathResponse) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -1059,7 +1060,7 @@ func (frame *ConnectionCloseFrame) MarshalJSON() ([]byte, error) {
 		Type: ConnectionCloseFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *ConnectionCloseFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -1108,7 +1109,7 @@ func (frame *ApplicationCloseFrame) MarshalJSON() ([]byte, error) {
 		Type: ApplicationCloseFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *ApplicationCloseFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}
@@ -1146,7 +1147,7 @@ func (frame *HandshakeDoneFrame) MarshalJSON() ([]byte, error) {
 		Type: HandshakeDoneFrameJSON,
 		Message: frame,
 	}
-	return envelope.MarshalJSON()
+	return json.Marshal(envelope)
 }
 func (frame *HandshakeDoneFrame) UnmarshalJSON(data []byte) error {
 	envelope := Envelope{}

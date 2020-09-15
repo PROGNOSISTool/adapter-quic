@@ -29,9 +29,7 @@ func main() {
 	}
 
 	SetupCloseHandler(sulAdapter)
-	defer func() {
-		sulAdapter.Stop()
-	}()
+	defer sulAdapter.Stop()
 
 	sulAdapter.Run()
 }
