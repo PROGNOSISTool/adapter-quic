@@ -5,6 +5,7 @@ import (
 	"fmt"
 	ms "github.com/tiferrei/golang-set"
 	qt "github.com/tiferrei/quic-tracker"
+	"log"
 	"sort"
 	"strings"
 )
@@ -12,6 +13,19 @@ import (
 type ConcreteSymbol struct {
 	qt.Packet
 }
+
+func (cs *ConcreteSymbol) UnmarshalJSON(data []byte) error {
+	envelope := qt.Envelope{}
+	err := json.Unmarshal(data, &envelope)
+	if err != nil {
+		log.Printf("Failed to unmarshal ConcreteSymbol: %v", err)
+		return err
+	}
+
+	*cs = ConcreteSymbol{envelope.Message.(qt.Packet)}
+	return nil
+}
+
 
 func NewConcreteSymbol(packet qt.Packet) ConcreteSymbol {
 	cs := ConcreteSymbol{packet}
