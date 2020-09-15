@@ -52,7 +52,7 @@ func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 
 	adapter.outgoingPacket = nil
 	adapter.incomingPacketSet = *NewConcreteSet()
 	adapter.outgoingResponse = *NewAbstractSet()
-	adapter.oracleTable = *ReadAbstractConcreteMap("oracleTable.gob")
+	adapter.oracleTable = *ReadAbstractConcreteMap("oracleTable.json")
 
 	adapter.trace = qt.NewTrace("Adapter", 1, sulAddress)
 	adapter.trace.AttachTo(adapter.connection)
@@ -191,7 +191,6 @@ func (a *Adapter) Run() {
 func (a *Adapter) Stop() {
 	a.trace.Complete(a.connection)
 	a.SaveTrace("trace.json")
-	_ = a.oracleTable.SaveToDisk("oracleTable.gob")
 	a.SaveOracleTable("oracleTable.json")
 	a.agents.Stop("SendingAgent")
 	a.agents.StopAll()

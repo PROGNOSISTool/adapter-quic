@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
+	"io/ioutil"
 	"strings"
 )
 
@@ -23,20 +23,18 @@ func ReadAbstractConcreteMap(filename string) *AbstractConcreteMap {
 	acm := NewAbstractConcreteMap()
 
 	fmt.Printf("Reading Oracle table...\n")
-	gobFile, err := os.Open(filename)
-	if err != nil {
-		fmt.Printf("Failed to open GOB file: %v\n", err.Error())
-		return acm
-	}
-
-	dataDecoder := gob.NewDecoder(gobFile)
-	err = dataDecoder.Decode(acm)
+	jsonFile, err := ioutil.ReadFile(filename)
 	if err != nil && err != io.EOF {
-		fmt.Printf("Failed to decode GOB file: %v\n", err.Error())
+		fmt.Printf("Failed to open JSON file: %v\n", err.Error())
 		return acm
 	}
 
-	gobFile.Close()
+	err = json.Unmarshal(jsonFile, acm)
+	if err != nil {
+		fmt.Printf("Failed to decode JSON file: %v\n", err.Error())
+		return acm
+	}
+
 	return acm
 }
 
@@ -54,29 +52,6 @@ func (acm *AbstractConcreteMap) JSON() string {
 		fmt.Printf("Failed to Marshal AbstractConcreteMap: %v\n", err.Error())
 	}
 	return string(ba)
-}
-
-func (acm *AbstractConcreteMap) SaveToDisk(filename string) error {
-	dataFile, err := os.Create(filename)
-	if err != nil {
-		fmt.Printf("Failed to create GOB file: %v\n", err.Error())
-		return err
-	}
-
-	dataEncoder := gob.NewEncoder(dataFile)
-	for key, _ := range *acm {
-		fmt.Printf("[DEBUG] %v\n", key)
-	}
-
-	err = dataEncoder.Encode(*acm)
-	if err != nil {
-		fmt.Printf("Failed to encode to GOB file: %v\n", err.Error())
-		dataFile.Close()
-		return err
-	}
-
-	dataFile.Close()
-	return nil
 }
 
 func (acm *AbstractConcreteMap) AddOPs(abstractOrderedPair AbstractOrderedPair, concreteOrderedPair ConcreteOrderedPair) {
