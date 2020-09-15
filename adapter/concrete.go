@@ -31,31 +31,29 @@ type ConcreteSet struct {
 	ms.Set // type: ConcreteSymbol
 }
 
+func (cs *ConcreteSet) UnmarshalJSON(data []byte) error {
+	type jsonSet []ConcreteSymbol
+	var internal jsonSet
+	err := json.Unmarshal(data, &internal)
+	if err != nil {
+		fmt.Printf("Failed to Unmarshal ConcreteSet: %v\n", err.Error())
+		return err
+	}
+
+	interfaceArray := make([]interface{}, len(internal))
+	for _, value := range internal {
+		interfaceArray = append(interfaceArray, value)
+	}
+
+	cs = &ConcreteSet{ms.NewSetFromSlice(interfaceArray)}
+
+	return nil
+}
+
 func NewConcreteSet() *ConcreteSet {
 	cs := ConcreteSet{ms.NewSet()}
 	return &cs
 }
-
-//func (cs *ConcreteSet) UnmarshalJSON(data []byte) error {
-//	type jsonSet struct {
-//		SymbolSet []ConcreteSymbol
-//	}
-//	var internal jsonSet
-//	err := json.Unmarshal(data, &internal)
-//	if err != nil {
-//		fmt.Printf("Failed to Unmarshal ConcreteSet: %v\n", err.Error())
-//		return err
-//	}
-//
-//	interfaceArray := make([]interface{}, len(internal.SymbolSet))
-//	for _, value := range internal.SymbolSet {
-//		interfaceArray = append(interfaceArray, value)
-//	}
-//
-//	cs.SymbolSet = ms.NewSetFromSlice(interfaceArray)
-//
-//	return nil
-//}
 
 func (cs *ConcreteSet) String() string {
 	if cs.Cardinality() == 0 {
