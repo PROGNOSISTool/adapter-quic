@@ -17,7 +17,7 @@ type Frame interface {
 	shouldBeRetransmitted() bool
 	FrameLength() uint16
 	MarshalJSON() ([]byte, error)
-	//UnmarshalJSON(data []byte) error
+	UnmarshalJSON(data []byte) error
 }
 
 func NewFrameFromType(frameType FrameType, buffer *bytes.Reader, conn *Connection) (Frame, error) {
@@ -189,16 +189,16 @@ func (frame PaddingFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *PaddingFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(PaddingFrame)
-//	return nil
-//}
+func (frame *PaddingFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(PaddingFrame)
+	return nil
+}
 func NewPaddingFrame(buffer *bytes.Reader) *PaddingFrame {
 	_, _ = ReadVarInt(buffer) // Discard frame type
 	return new(PaddingFrame)
@@ -220,16 +220,16 @@ func (frame PingFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *PingFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(PingFrame)
-//	return nil
-//}
+func (frame *PingFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(PingFrame)
+	return nil
+}
 func NewPingFrame(buffer *bytes.Reader) *PingFrame {
 	frame := new(PingFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -302,16 +302,16 @@ func (frame AckFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *AckFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(AckFrame)
-//	return nil
-//}
+func (frame *AckFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(AckFrame)
+	return nil
+}
 func (frame AckFrame) Equal(otherFrame AckFrame) bool {
 	if cmp.Equal(frame.AckRangeCount, otherFrame.AckRangeCount) &&
 		cmp.Equal(frame.AckRanges, otherFrame.AckRanges) &&
@@ -367,16 +367,16 @@ func (frame AckECNFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *AckECNFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(AckECNFrame)
-//	return nil
-//}
+func (frame *AckECNFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(AckECNFrame)
+	return nil
+}
 func ReadAckECNFrame(buffer *bytes.Reader, conn *Connection) *AckECNFrame {
 	frame := &AckECNFrame{*ReadAckFrame(buffer), 0, 0, 0}
 
@@ -409,16 +409,16 @@ func (frame ResetStream) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *ResetStream) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(ResetStream)
-//	return nil
-//}
+func (frame *ResetStream) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(ResetStream)
+	return nil
+}
 func NewResetStream(buffer *bytes.Reader) *ResetStream {
 	frame := new(ResetStream)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -449,16 +449,16 @@ func (frame StopSendingFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *StopSendingFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(StopSendingFrame)
-//	return nil
-//}
+func (frame *StopSendingFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(StopSendingFrame)
+	return nil
+}
 func NewStopSendingFrame(buffer *bytes.Reader) *StopSendingFrame {
 	frame := new(StopSendingFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -500,16 +500,16 @@ func (frame CryptoFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *CryptoFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(CryptoFrame)
-//	return nil
-//}
+func (frame *CryptoFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(CryptoFrame)
+	return nil
+}
 func NewCryptoFrame(cryptoStream *Stream, data []byte) *CryptoFrame {
 	frame := &CryptoFrame{Offset: cryptoStream.WriteOffset, CryptoData: data, Length: uint64(len(data))}
 	cryptoStream.WriteOffset += frame.Length
@@ -537,16 +537,16 @@ func (frame NewTokenFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *NewTokenFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(NewTokenFrame)
-//	return nil
-//}
+func (frame *NewTokenFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(NewTokenFrame)
+	return nil
+}
 func ReadNewTokenFrame(buffer *bytes.Reader, conn *Connection) *NewTokenFrame {
 	frame := new(NewTokenFrame)
 	ReadVarIntValue(buffer) // Discard frame type
@@ -608,16 +608,16 @@ func (frame StreamFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *StreamFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(StreamFrame)
-//	return nil
-//}
+func (frame *StreamFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(StreamFrame)
+	return nil
+}
 func ReadStreamFrame(buffer *bytes.Reader, conn *Connection) *StreamFrame {
 	frame := new(StreamFrame)
 	typeByte, _ := buffer.ReadByte()
@@ -678,16 +678,16 @@ func (frame MaxDataFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *MaxDataFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(MaxDataFrame)
-//	return nil
-//}
+func (frame *MaxDataFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(MaxDataFrame)
+	return nil
+}
 
 type MaxStreamDataFrame struct {
 	StreamId          uint64
@@ -710,16 +710,16 @@ func (frame MaxStreamDataFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *MaxStreamDataFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(MaxStreamDataFrame)
-//	return nil
-//}
+func (frame *MaxStreamDataFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(MaxStreamDataFrame)
+	return nil
+}
 func NewMaxStreamDataFrame(buffer *bytes.Reader) *MaxStreamDataFrame {
 	frame := new(MaxStreamDataFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -756,16 +756,16 @@ func (frame MaxStreamsFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *MaxStreamsFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(MaxStreamsFrame)
-//	return nil
-//}
+func (frame *MaxStreamsFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(MaxStreamsFrame)
+	return nil
+}
 func NewMaxStreamIdFrame(buffer *bytes.Reader) *MaxStreamsFrame {
 	frame := new(MaxStreamsFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -792,16 +792,16 @@ func (frame DataBlockedFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *DataBlockedFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(DataBlockedFrame)
-//	return nil
-//}
+func (frame *DataBlockedFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(DataBlockedFrame)
+	return nil
+}
 func NewBlockedFrame(buffer *bytes.Reader) *DataBlockedFrame {
 	frame := new(DataBlockedFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -830,16 +830,16 @@ func (frame StreamDataBlockedFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *StreamDataBlockedFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(StreamDataBlockedFrame)
-//	return nil
-//}
+func (frame *StreamDataBlockedFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(StreamDataBlockedFrame)
+	return nil
+}
 func NewStreamBlockedFrame(buffer *bytes.Reader) *StreamDataBlockedFrame {
 	frame := new(StreamDataBlockedFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -920,16 +920,16 @@ func (frame NewConnectionIdFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *NewConnectionIdFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(NewConnectionIdFrame)
-//	return nil
-//}
+func (frame *NewConnectionIdFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(NewConnectionIdFrame)
+	return nil
+}
 func NewNewConnectionIdFrame(buffer *bytes.Reader) *NewConnectionIdFrame {
 	frame := new(NewConnectionIdFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -961,16 +961,16 @@ func (frame RetireConnectionId) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *RetireConnectionId) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(RetireConnectionId)
-//	return nil
-//}
+func (frame *RetireConnectionId) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(RetireConnectionId)
+	return nil
+}
 func ReadRetireConnectionId(buffer *bytes.Reader) *RetireConnectionId {
 	frame := new(RetireConnectionId)
 	buffer.ReadByte() // Discard frame byte
@@ -997,16 +997,16 @@ func (frame PathChallenge) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *PathChallenge) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(PathChallenge)
-//	return nil
-//}
+func (frame *PathChallenge) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(PathChallenge)
+	return nil
+}
 func ReadPathChallenge(buffer *bytes.Reader) *PathChallenge {
 	frame := new(PathChallenge)
 	buffer.ReadByte() // Discard frame byte
@@ -1033,16 +1033,16 @@ func (frame PathResponse) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *PathResponse) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(PathResponse)
-//	return nil
-//}
+func (frame *PathResponse) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(PathResponse)
+	return nil
+}
 func ReadPathResponse(buffer *bytes.Reader) *PathResponse {
 	frame := new(PathResponse)
 	buffer.ReadByte() // Discard frame byte
@@ -1082,16 +1082,16 @@ func (frame ConnectionCloseFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *ConnectionCloseFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(ConnectionCloseFrame)
-//	return nil
-//}
+func (frame *ConnectionCloseFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(ConnectionCloseFrame)
+	return nil
+}
 func NewConnectionCloseFrame(buffer *bytes.Reader) *ConnectionCloseFrame {
 	frame := new(ConnectionCloseFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -1132,16 +1132,16 @@ func (frame ApplicationCloseFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *ApplicationCloseFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(ApplicationCloseFrame)
-//	return nil
-//}
+func (frame *ApplicationCloseFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(ApplicationCloseFrame)
+	return nil
+}
 func NewApplicationCloseFrame(buffer *bytes.Reader) *ApplicationCloseFrame {
 	frame := new(ApplicationCloseFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -1171,16 +1171,16 @@ func (frame HandshakeDoneFrame) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-//func (frame *HandshakeDoneFrame) UnmarshalJSON(data []byte) error {
-//	envelope := Envelope{}
-//	err := envelope.UnmarshalJSON(data)
-//	if err != nil {
-//		return err
-//	}
-//
-//	*frame = envelope.Message.(HandshakeDoneFrame)
-//	return nil
-//}
+func (frame *HandshakeDoneFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(HandshakeDoneFrame)
+	return nil
+}
 func NewHandshakeDoneFrame(buffer *bytes.Reader) *HandshakeDoneFrame {
 	frame := new(HandshakeDoneFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type

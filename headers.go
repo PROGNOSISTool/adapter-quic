@@ -45,6 +45,8 @@ type Header interface {
 	EncryptionLevel() EncryptionLevel
 	Encode() []byte
 	HeaderLength() int
+	UnmarshalJSON([]byte) error
+	MarshalJSON() ([]byte, error)
 }
 func ReadHeader(buffer *bytes.Reader, conn *Connection) Header {
 	var h Header
