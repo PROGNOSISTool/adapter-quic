@@ -22,7 +22,7 @@ type Packet interface {
 	EncryptionLevel() EncryptionLevel
 	ShortString() string
 	MarshalJSON() ([]byte, error)
-	UnmarshalJSON([]byte) error
+	//UnmarshalJSON([]byte) error
 	ReceiveContext() PacketContext
 	SetReceiveContext(ctx PacketContext)
 	SendContext() PacketContext
@@ -92,23 +92,24 @@ func (p *VersionNegotiationPacket) Pointer() unsafe.Pointer {
 }
 func (p *VersionNegotiationPacket) PNSpace() PNSpace                 { return PNSpaceNoSpace }
 func (p *VersionNegotiationPacket) EncryptionLevel() EncryptionLevel { return EncryptionLevelNone }
-func (frame *VersionNegotiationPacket) MarshalJSON() ([]byte, error) {
+func (p *VersionNegotiationPacket) MarshalJSON() ([]byte, error) {
+	type localPacket *VersionNegotiationPacket
 	envelope := Envelope{
 		Type: VersionNegotiationPacketJSON,
-		Message: frame,
+		Message: localPacket(p),
 	}
 	return json.Marshal(envelope)
 }
-func (frame *VersionNegotiationPacket) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := envelope.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	*frame = envelope.Message.(VersionNegotiationPacket)
-	return nil
-}
+//func (p *VersionNegotiationPacket) UnmarshalJSON(data []byte) error {
+//	envelope := Envelope{}
+//	err := envelope.UnmarshalJSON(data)
+//	if err != nil {
+//		return err
+//	}
+//
+//	*p = envelope.Message.(VersionNegotiationPacket)
+//	return nil
+//}
 func ReadVersionNegotationPacket(buffer *bytes.Reader) *VersionNegotiationPacket {
 	p := new(VersionNegotiationPacket)
 	b, err := buffer.ReadByte()
@@ -284,23 +285,24 @@ func ReadInitialPacket(buffer *bytes.Reader, conn *Connection) *InitialPacket {
 	}
 	return p
 }
-func (frame *InitialPacket) MarshalJSON() ([]byte, error) {
+func (p *InitialPacket) MarshalJSON() ([]byte, error) {
+	type localPacket *InitialPacket
 	envelope := Envelope{
 		Type: InitialPacketJSON,
-		Message: frame,
+		Message: localPacket(p),
 	}
 	return json.Marshal(envelope)
 }
-func (frame *InitialPacket) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := envelope.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	*frame = envelope.Message.(InitialPacket)
-	return nil
-}
+//func (p *InitialPacket) UnmarshalJSON(data []byte) error {
+//	envelope := Envelope{}
+//	err := envelope.UnmarshalJSON(data)
+//	if err != nil {
+//		return err
+//	}
+//
+//	*p = envelope.Message.(InitialPacket)
+//	return nil
+//}
 func NewInitialPacket(conn *Connection) *InitialPacket {
 	p := new(InitialPacket)
 	p.Header = NewLongHeader(Initial, conn, PNSpaceInitial)
@@ -336,23 +338,24 @@ func (p *RetryPacket) EncodePayload() []byte {
 	buffer.Write(p.RetryIntegrityTag[:])
 	return buffer.Bytes()
 }
-func (frame *RetryPacket) MarshalJSON() ([]byte, error) {
+func (p *RetryPacket) MarshalJSON() ([]byte, error) {
+	type localPacket *RetryPacket
 	envelope := Envelope{
 		Type: RetryPacketJSON,
-		Message: frame,
+		Message: localPacket(p),
 	}
 	return json.Marshal(envelope)
 }
-func (frame *RetryPacket) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := envelope.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	*frame = envelope.Message.(RetryPacket)
-	return nil
-}
+//func (p *RetryPacket) UnmarshalJSON(data []byte) error {
+//	envelope := Envelope{}
+//	err := envelope.UnmarshalJSON(data)
+//	if err != nil {
+//		return err
+//	}
+//
+//	*p = envelope.Message.(RetryPacket)
+//	return nil
+//}
 
 type HandshakePacket struct {
 	FramePacket
@@ -378,23 +381,24 @@ func ReadHandshakePacket(buffer *bytes.Reader, conn *Connection) *HandshakePacke
 	}
 	return p
 }
-func (frame *HandshakePacket) MarshalJSON() ([]byte, error) {
+func (p *HandshakePacket) MarshalJSON() ([]byte, error) {
+	type localPacket *HandshakePacket
 	envelope := Envelope{
 		Type: HandshakePacketJSON,
-		Message: frame,
+		Message: localPacket(p),
 	}
 	return json.Marshal(envelope)
 }
-func (frame *HandshakePacket) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := envelope.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	*frame = envelope.Message.(HandshakePacket)
-	return nil
-}
+//func (p *HandshakePacket) UnmarshalJSON(data []byte) error {
+//	envelope := Envelope{}
+//	err := envelope.UnmarshalJSON(data)
+//	if err != nil {
+//		return err
+//	}
+//
+//	*p = envelope.Message.(HandshakePacket)
+//	return nil
+//}
 func NewHandshakePacket(conn *Connection) *HandshakePacket {
 	p := new(HandshakePacket)
 	p.Header = NewLongHeader(Handshake, conn, PNSpaceHandshake)
@@ -406,23 +410,24 @@ type ProtectedPacket struct {
 }
 func (p *ProtectedPacket) PNSpace() PNSpace { return PNSpaceAppData }
 func (p *ProtectedPacket) EncryptionLevel() EncryptionLevel { return EncryptionLevel1RTT }
-func (frame *ProtectedPacket) MarshalJSON() ([]byte, error) {
+func (p *ProtectedPacket) MarshalJSON() ([]byte, error) {
+	type localPacket *ProtectedPacket
 	envelope := Envelope{
 		Type: ProtectedPacketJSON,
-		Message: frame,
+		Message: localPacket(p),
 	}
 	return json.Marshal(envelope)
 }
-func (frame *ProtectedPacket) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := envelope.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	*frame = envelope.Message.(ProtectedPacket)
-	return nil
-}
+//func (p *ProtectedPacket) UnmarshalJSON(data []byte) error {
+//	envelope := Envelope{}
+//	err := envelope.UnmarshalJSON(data)
+//	if err != nil {
+//		return err
+//	}
+//
+//	*p = envelope.Message.(ProtectedPacket)
+//	return nil
+//}
 func ReadProtectedPacket(buffer *bytes.Reader, conn *Connection) *ProtectedPacket {
 	p := new(ProtectedPacket)
 	p.Header = ReadHeader(buffer, conn)
@@ -453,23 +458,24 @@ type ZeroRTTProtectedPacket struct {
 }
 func (p *ZeroRTTProtectedPacket) PNSpace() PNSpace { return PNSpaceAppData }
 func (p *ZeroRTTProtectedPacket) EncryptionLevel() EncryptionLevel { return EncryptionLevel0RTT }
-func (frame *ZeroRTTProtectedPacket) MarshalJSON() ([]byte, error) {
+func (p *ZeroRTTProtectedPacket) MarshalJSON() ([]byte, error) {
+	type localPacket *ZeroRTTProtectedPacket
 	envelope := Envelope{
 		Type: ZeroRTTProtectedPacketJSON,
-		Message: frame,
+		Message: localPacket(p),
 	}
 	return json.Marshal(envelope)
 }
-func (frame *ZeroRTTProtectedPacket) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := envelope.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	*frame = envelope.Message.(ZeroRTTProtectedPacket)
-	return nil
-}
+//func (p *ZeroRTTProtectedPacket) UnmarshalJSON(data []byte) error {
+//	envelope := Envelope{}
+//	err := envelope.UnmarshalJSON(data)
+//	if err != nil {
+//		return err
+//	}
+//
+//	*p = envelope.Message.(ZeroRTTProtectedPacket)
+//	return nil
+//}
 func NewZeroRTTProtectedPacket(conn *Connection) *ZeroRTTProtectedPacket {
 	p := new(ZeroRTTProtectedPacket)
 	p.Header = NewLongHeader(ZeroRTTProtected, conn, PNSpaceAppData)
@@ -486,23 +492,24 @@ func (*StatelessResetPacket) PNSpace() PNSpace { return PNSpaceNoSpace }
 func (p *StatelessResetPacket) Pointer() unsafe.Pointer { return unsafe.Pointer(p) }
 func (*StatelessResetPacket) EncryptionLevel() EncryptionLevel { return EncryptionLevelNone }
 func ( StatelessResetPacket) EncodePayload() []byte { return nil }
-func (frame *StatelessResetPacket) MarshalJSON() ([]byte, error) {
+func (p *StatelessResetPacket) MarshalJSON() ([]byte, error) {
+	type localPacket *StatelessResetPacket
 	envelope := Envelope{
 		Type: StatelessResetPacketJSON,
-		Message: frame,
+		Message: localPacket(p),
 	}
 	return json.Marshal(envelope)
 }
-func (frame *StatelessResetPacket) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := envelope.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	*frame = envelope.Message.(StatelessResetPacket)
-	return nil
-}
+//func (p *StatelessResetPacket) UnmarshalJSON(data []byte) error {
+//	envelope := Envelope{}
+//	err := envelope.UnmarshalJSON(data)
+//	if err != nil {
+//		return err
+//	}
+//
+//	*p = envelope.Message.(StatelessResetPacket)
+//	return nil
+//}
 func ReadStatelessResetPacket(buffer *bytes.Reader) *StatelessResetPacket {
 	p := new(StatelessResetPacket)
 	p.UnpredictableBits = make([]byte, buffer.Len() - len(p.StatelessResetToken))
