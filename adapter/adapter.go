@@ -314,10 +314,12 @@ func writeJson(filename string, object interface{}) {
 	outFile, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
 	if err == nil {
 		content, err := json.Marshal(object)
-		if err == nil {
-			outFile.Write(content)
-			outFile.Close()
+		if err != nil {
+			log.Fatalf("Failed to marshal JSON: %v", err)
 		}
+
+		outFile.Write(content)
+		outFile.Close()
 	}
 }
 

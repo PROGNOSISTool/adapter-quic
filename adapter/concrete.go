@@ -10,11 +10,11 @@ import (
 )
 
 type ConcreteSymbol struct {
-	Packet qt.Packet
+	qt.Packet
 }
 
 func NewConcreteSymbol(packet qt.Packet) ConcreteSymbol {
-	cs := ConcreteSymbol{Packet: packet}
+	cs := ConcreteSymbol{packet}
 	return cs
 }
 
@@ -28,20 +28,12 @@ func (cs *ConcreteSymbol) String() string {
 }
 
 type ConcreteSet struct {
-	SymbolSet ms.Set // type: ConcreteSymbol
+	ms.Set // type: ConcreteSymbol
 }
 
 func NewConcreteSet() *ConcreteSet {
-	cs := ConcreteSet{SymbolSet: ms.NewSet()}
+	cs := ConcreteSet{ms.NewSet()}
 	return &cs
-}
-
-func (as *ConcreteSet) Add(concreteSymbol ConcreteSymbol) {
-	as.SymbolSet.Add(concreteSymbol)
-}
-
-func (as *ConcreteSet) Clear() {
-	as.SymbolSet.Clear()
 }
 
 //func (cs *ConcreteSet) UnmarshalJSON(data []byte) error {
@@ -66,11 +58,11 @@ func (as *ConcreteSet) Clear() {
 //}
 
 func (cs *ConcreteSet) String() string {
-	if cs.SymbolSet.Cardinality() == 0 {
+	if cs.Cardinality() == 0 {
 		return "{}"
 	}
 
-	setSlice := cs.SymbolSet.ToSlice()
+	setSlice := cs.ToSlice()
 	stringSlice := []string{}
 	for _, setElement := range setSlice {
 		symbol := setElement.(ConcreteSymbol)

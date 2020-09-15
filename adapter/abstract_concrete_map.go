@@ -1,7 +1,6 @@
 package adapter
 
 import (
-	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,7 +13,6 @@ import (
 type AbstractConcreteMap map[string]ConcreteOrderedPair
 
 func NewAbstractConcreteMap() *AbstractConcreteMap {
-	gob.Register(AbstractConcreteMap{})
 	acm := AbstractConcreteMap{}
 	return &acm
 }

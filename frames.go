@@ -181,8 +181,8 @@ func (frame *PaddingFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *PaddingFrame) shouldBeRetransmitted() bool { return false }
 func (frame *PaddingFrame) FrameLength() uint16         { return 1 }
-func (frame *PaddingFrame) MarshalJSON() ([]byte, error) {
-	type localFrame *PaddingFrame
+func (frame PaddingFrame) MarshalJSON() ([]byte, error) {
+	type localFrame PaddingFrame
 	envelope := Envelope{
 		Type: PaddingFrameJSON,
 		Message: localFrame(frame),
@@ -212,9 +212,8 @@ func (frame *PingFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *PingFrame) shouldBeRetransmitted() bool { return false }
 func (frame *PingFrame) FrameLength() uint16         { return 1 }
-func (frame *PingFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *PingFrame
-
+func (frame PingFrame) MarshalJSON() ([]byte, error) {
+    type localFrame PingFrame
 	envelope := Envelope{
 		Type: PingFrameJSON,
 		Message: localFrame(frame),
@@ -295,8 +294,8 @@ func (frame *AckFrame) GetAckedPackets() []PacketNumber { // TODO: This is prone
 	}
 	return packets
 }
-func (frame *AckFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *AckFrame
+func (frame AckFrame) MarshalJSON() ([]byte, error) {
+    type localFrame AckFrame
 	envelope := Envelope{
 		Type: AckFrameJSON,
 		Message: localFrame(frame),
@@ -360,8 +359,8 @@ func (frame *AckECNFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *AckECNFrame) shouldBeRetransmitted() bool { return false }
 func (frame *AckECNFrame) FrameLength() uint16         { return frame.AckFrame.FrameLength() + uint16(VarIntLen(frame.ECT0Count)+VarIntLen(frame.ECT1Count)+VarIntLen(frame.ECTCECount)) }
-func (frame *AckECNFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *AckECNFrame
+func (frame AckECNFrame) MarshalJSON() ([]byte, error) {
+    type localFrame AckECNFrame
 	envelope := Envelope{
 		Type: AckECNFrameJSON,
 		Message: localFrame(frame),
@@ -402,8 +401,8 @@ func (frame *ResetStream) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *ResetStream) shouldBeRetransmitted() bool { return true }
 func (frame *ResetStream) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.StreamId)+VarIntLen(frame.ApplicationErrorCode)+VarIntLen(frame.FinalSize)) }
-func (frame *ResetStream) MarshalJSON() ([]byte, error) {
-    type localFrame *ResetStream
+func (frame ResetStream) MarshalJSON() ([]byte, error) {
+    type localFrame ResetStream
 	envelope := Envelope{
 		Type: ResetStreamJSON,
 		Message: localFrame(frame),
@@ -442,8 +441,8 @@ func (frame *StopSendingFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *StopSendingFrame) shouldBeRetransmitted() bool { return true }
 func (frame *StopSendingFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.StreamId) + VarIntLen(frame.ApplicationErrorCode)) }
-func (frame *StopSendingFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *StopSendingFrame
+func (frame StopSendingFrame) MarshalJSON() ([]byte, error) {
+    type localFrame StopSendingFrame
 	envelope := Envelope{
 		Type: StopSendingFrameJSON,
 		Message: localFrame(frame),
@@ -493,8 +492,8 @@ func ReadCryptoFrame(buffer *bytes.Reader, conn *Connection) *CryptoFrame {
 
 	return frame
 }
-func (frame *CryptoFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *CryptoFrame
+func (frame CryptoFrame) MarshalJSON() ([]byte, error) {
+    type localFrame CryptoFrame
 	envelope := Envelope{
 		Type: CryptoFrameJSON,
 		Message: localFrame(frame),
@@ -530,8 +529,8 @@ func (frame *NewTokenFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *NewTokenFrame) shouldBeRetransmitted() bool { return true }
 func (frame *NewTokenFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(uint64(len(frame.Token)))) + uint16(len(frame.Token)) }
-func (frame *NewTokenFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *NewTokenFrame
+func (frame NewTokenFrame) MarshalJSON() ([]byte, error) {
+    type localFrame NewTokenFrame
 	envelope := Envelope{
 		Type: NewTokenFrameJSON,
 		Message: localFrame(frame),
@@ -601,8 +600,8 @@ func (frame *StreamFrame) FrameLength() uint16 {
 	}
 	return length + uint16(len(frame.StreamData))
 }
-func (frame *StreamFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *StreamFrame
+func (frame StreamFrame) MarshalJSON() ([]byte, error) {
+    type localFrame StreamFrame
 	envelope := Envelope{
 		Type: NewTokenFrameJSON,
 		Message: localFrame(frame),
@@ -671,8 +670,8 @@ func NewMaxDataFrame(buffer *bytes.Reader) *MaxDataFrame {
 	frame.MaximumData, _, _ = ReadVarIntValue(buffer)
 	return frame
 }
-func (frame *MaxDataFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *MaxDataFrame
+func (frame MaxDataFrame) MarshalJSON() ([]byte, error) {
+    type localFrame MaxDataFrame
 	envelope := Envelope{
 		Type: MaxDataFrameJSON,
 		Message: localFrame(frame),
@@ -703,8 +702,8 @@ func (frame *MaxStreamDataFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *MaxStreamDataFrame) shouldBeRetransmitted() bool { return true }
 func (frame *MaxStreamDataFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.StreamId)+VarIntLen(frame.MaximumStreamData)) }
-func (frame *MaxStreamDataFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *MaxStreamDataFrame
+func (frame MaxStreamDataFrame) MarshalJSON() ([]byte, error) {
+    type localFrame MaxStreamDataFrame
 	envelope := Envelope{
 		Type: MaxStreamDataFrameJSON,
 		Message: localFrame(frame),
@@ -749,8 +748,8 @@ func (frame *MaxStreamsFrame) shouldBeRetransmitted() bool { return true }
 func (frame *MaxStreamsFrame) IsUni() bool                 { return frame.StreamsType == UniStreams }
 func (frame *MaxStreamsFrame) IsBidi() bool                { return frame.StreamsType == BidiStreams }
 func (frame *MaxStreamsFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.MaximumStreams)) }
-func (frame *MaxStreamsFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *MaxStreamsFrame
+func (frame MaxStreamsFrame) MarshalJSON() ([]byte, error) {
+    type localFrame MaxStreamsFrame
 	envelope := Envelope{
 		Type: MaxStreamsFrameJSON,
 		Message: localFrame(frame),
@@ -785,8 +784,8 @@ func (frame *DataBlockedFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *DataBlockedFrame) shouldBeRetransmitted() bool { return false }
 func (frame *DataBlockedFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.DataLimit)) }
-func (frame *DataBlockedFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *DataBlockedFrame
+func (frame DataBlockedFrame) MarshalJSON() ([]byte, error) {
+    type localFrame DataBlockedFrame
 	envelope := Envelope{
 		Type: DataBlockedFrameJSON,
 		Message: localFrame(frame),
@@ -823,8 +822,8 @@ func (frame *StreamDataBlockedFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *StreamDataBlockedFrame) shouldBeRetransmitted() bool { return false }
 func (frame *StreamDataBlockedFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.StreamId)+VarIntLen(frame.StreamDataLimit)) }
-func (frame *StreamDataBlockedFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *StreamDataBlockedFrame
+func (frame StreamDataBlockedFrame) MarshalJSON() ([]byte, error) {
+    type localFrame StreamDataBlockedFrame
 	envelope := Envelope{
 		Type: StreamDataBlockedFrameJSON,
 		Message: localFrame(frame),
@@ -869,8 +868,8 @@ func (frame *StreamsBlockedFrame) shouldBeRetransmitted() bool { return false }
 func (frame *StreamsBlockedFrame) IsUni() bool                 { return frame.StreamsType == UniStreams }
 func (frame *StreamsBlockedFrame) IsBidi() bool                { return frame.StreamsType == BidiStreams }
 func (frame *StreamsBlockedFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.StreamLimit)) }
-func (frame *StreamsBlockedFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *StreamsBlockedFrame
+func (frame StreamsBlockedFrame) MarshalJSON() ([]byte, error) {
+    type localFrame StreamsBlockedFrame
 	envelope := Envelope{
 		Type: StreamsBlockedFrameJSON,
 		Message: localFrame(frame),
@@ -913,8 +912,8 @@ func (frame *NewConnectionIdFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *NewConnectionIdFrame) shouldBeRetransmitted() bool { return true }
 func (frame *NewConnectionIdFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.Sequence) + VarIntLen(frame.RetirePriorTo)) + 1 + uint16(len(frame.ConnectionId)) + 16 }
-func (frame *NewConnectionIdFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *NewConnectionIdFrame
+func (frame NewConnectionIdFrame) MarshalJSON() ([]byte, error) {
+    type localFrame NewConnectionIdFrame
 	envelope := Envelope{
 		Type: NewConnectionIdFrameJSON,
 		Message: localFrame(frame),
@@ -954,8 +953,8 @@ func (frame *RetireConnectionId) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *RetireConnectionId) shouldBeRetransmitted() bool { return true }
 func (frame *RetireConnectionId) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.SequenceNumber)) }
-func (frame *RetireConnectionId) MarshalJSON() ([]byte, error) {
-    type localFrame *RetireConnectionId
+func (frame RetireConnectionId) MarshalJSON() ([]byte, error) {
+    type localFrame RetireConnectionId
 	envelope := Envelope{
 		Type: RetireConnectionIdJSON,
 		Message: localFrame(frame),
@@ -990,8 +989,8 @@ func (frame *PathChallenge) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *PathChallenge) shouldBeRetransmitted() bool { return true }
 func (frame *PathChallenge) FrameLength() uint16         { return 1 + 8 }
-func (frame *PathChallenge) MarshalJSON() ([]byte, error) {
-    type localFrame *PathChallenge
+func (frame PathChallenge) MarshalJSON() ([]byte, error) {
+    type localFrame PathChallenge
 	envelope := Envelope{
 		Type: PathChallengeJSON,
 		Message: localFrame(frame),
@@ -1026,8 +1025,8 @@ func (frame *PathResponse) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *PathResponse) shouldBeRetransmitted() bool { return false }
 func (frame *PathResponse) FrameLength() uint16         { return 1 + 8 }
-func (frame *PathResponse) MarshalJSON() ([]byte, error) {
-    type localFrame *PathResponse
+func (frame PathResponse) MarshalJSON() ([]byte, error) {
+    type localFrame PathResponse
 	envelope := Envelope{
 		Type: PathResponseJSON,
 		Message: localFrame(frame),
@@ -1075,8 +1074,8 @@ func (frame *ConnectionCloseFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *ConnectionCloseFrame) shouldBeRetransmitted() bool { return false }
 func (frame *ConnectionCloseFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.ErrorCode)+VarIntLen(frame.ErrorFrameType)+VarIntLen(frame.ReasonPhraseLength)) + uint16(frame.ReasonPhraseLength) }
-func (frame *ConnectionCloseFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *ConnectionCloseFrame
+func (frame ConnectionCloseFrame) MarshalJSON() ([]byte, error) {
+    type localFrame ConnectionCloseFrame
 	envelope := Envelope{
 		Type: ConnectionCloseFrameJSON,
 		Message: localFrame(frame),
@@ -1125,8 +1124,8 @@ func (frame *ApplicationCloseFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *ApplicationCloseFrame) shouldBeRetransmitted() bool { return false }
 func (frame *ApplicationCloseFrame) FrameLength() uint16         { return 1 + 2 + uint16(VarIntLen(frame.ReasonPhraseLength)) + uint16(frame.ReasonPhraseLength) }
-func (frame *ApplicationCloseFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *ApplicationCloseFrame
+func (frame ApplicationCloseFrame) MarshalJSON() ([]byte, error) {
+    type localFrame ApplicationCloseFrame
 	envelope := Envelope{
 		Type: ApplicationCloseFrameJSON,
 		Message: localFrame(frame),
@@ -1164,8 +1163,8 @@ func (frame *HandshakeDoneFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *HandshakeDoneFrame) shouldBeRetransmitted() bool { return true }
 func (frame *HandshakeDoneFrame) FrameLength() uint16         { return 1 }
-func (frame *HandshakeDoneFrame) MarshalJSON() ([]byte, error) {
-    type localFrame *HandshakeDoneFrame
+func (frame HandshakeDoneFrame) MarshalJSON() ([]byte, error) {
+    type localFrame HandshakeDoneFrame
 	envelope := Envelope{
 		Type: HandshakeDoneFrameJSON,
 		Message: localFrame(frame),

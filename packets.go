@@ -92,8 +92,8 @@ func (p *VersionNegotiationPacket) Pointer() unsafe.Pointer {
 }
 func (p *VersionNegotiationPacket) PNSpace() PNSpace                 { return PNSpaceNoSpace }
 func (p *VersionNegotiationPacket) EncryptionLevel() EncryptionLevel { return EncryptionLevelNone }
-func (p *VersionNegotiationPacket) MarshalJSON() ([]byte, error) {
-	type localPacket *VersionNegotiationPacket
+func (p VersionNegotiationPacket) MarshalJSON() ([]byte, error) {
+	type localPacket VersionNegotiationPacket
 	envelope := Envelope{
 		Type: VersionNegotiationPacketJSON,
 		Message: localPacket(p),
@@ -285,8 +285,8 @@ func ReadInitialPacket(buffer *bytes.Reader, conn *Connection) *InitialPacket {
 	}
 	return p
 }
-func (p *InitialPacket) MarshalJSON() ([]byte, error) {
-	type localPacket *InitialPacket
+func (p InitialPacket) MarshalJSON() ([]byte, error) {
+	type localPacket InitialPacket
 	envelope := Envelope{
 		Type: InitialPacketJSON,
 		Message: localPacket(p),
@@ -338,8 +338,8 @@ func (p *RetryPacket) EncodePayload() []byte {
 	buffer.Write(p.RetryIntegrityTag[:])
 	return buffer.Bytes()
 }
-func (p *RetryPacket) MarshalJSON() ([]byte, error) {
-	type localPacket *RetryPacket
+func (p RetryPacket) MarshalJSON() ([]byte, error) {
+	type localPacket RetryPacket
 	envelope := Envelope{
 		Type: RetryPacketJSON,
 		Message: localPacket(p),
@@ -381,8 +381,8 @@ func ReadHandshakePacket(buffer *bytes.Reader, conn *Connection) *HandshakePacke
 	}
 	return p
 }
-func (p *HandshakePacket) MarshalJSON() ([]byte, error) {
-	type localPacket *HandshakePacket
+func (p HandshakePacket) MarshalJSON() ([]byte, error) {
+	type localPacket HandshakePacket
 	envelope := Envelope{
 		Type: HandshakePacketJSON,
 		Message: localPacket(p),
@@ -410,8 +410,8 @@ type ProtectedPacket struct {
 }
 func (p *ProtectedPacket) PNSpace() PNSpace { return PNSpaceAppData }
 func (p *ProtectedPacket) EncryptionLevel() EncryptionLevel { return EncryptionLevel1RTT }
-func (p *ProtectedPacket) MarshalJSON() ([]byte, error) {
-	type localPacket *ProtectedPacket
+func (p ProtectedPacket) MarshalJSON() ([]byte, error) {
+	type localPacket ProtectedPacket
 	envelope := Envelope{
 		Type: ProtectedPacketJSON,
 		Message: localPacket(p),
@@ -458,8 +458,8 @@ type ZeroRTTProtectedPacket struct {
 }
 func (p *ZeroRTTProtectedPacket) PNSpace() PNSpace { return PNSpaceAppData }
 func (p *ZeroRTTProtectedPacket) EncryptionLevel() EncryptionLevel { return EncryptionLevel0RTT }
-func (p *ZeroRTTProtectedPacket) MarshalJSON() ([]byte, error) {
-	type localPacket *ZeroRTTProtectedPacket
+func (p ZeroRTTProtectedPacket) MarshalJSON() ([]byte, error) {
+	type localPacket ZeroRTTProtectedPacket
 	envelope := Envelope{
 		Type: ZeroRTTProtectedPacketJSON,
 		Message: localPacket(p),
@@ -492,8 +492,8 @@ func (*StatelessResetPacket) PNSpace() PNSpace { return PNSpaceNoSpace }
 func (p *StatelessResetPacket) Pointer() unsafe.Pointer { return unsafe.Pointer(p) }
 func (*StatelessResetPacket) EncryptionLevel() EncryptionLevel { return EncryptionLevelNone }
 func ( StatelessResetPacket) EncodePayload() []byte { return nil }
-func (p *StatelessResetPacket) MarshalJSON() ([]byte, error) {
-	type localPacket *StatelessResetPacket
+func (p StatelessResetPacket) MarshalJSON() ([]byte, error) {
+	type localPacket StatelessResetPacket
 	envelope := Envelope{
 		Type: StatelessResetPacketJSON,
 		Message: localPacket(p),

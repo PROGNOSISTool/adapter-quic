@@ -12,7 +12,7 @@ import (
 
 func main() {
 	adapterAddress := readEnvWithFallback("ADAPTER_ADDRESS", "0.0.0.0:3333")
-	sulAddress := readEnvWithFallback("SUL_ADDRESS", "implementation:4433")
+	sulAddress := readEnvWithFallback("SUL_ADDRESS", "127.0.0.1:4433")
 	sulName := readEnvWithFallback("SUL_NAME", "quic.tiferrei.com")
 	http3 := readEnvWithFallback("HTTP3", "false")
 
