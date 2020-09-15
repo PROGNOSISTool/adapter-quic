@@ -15,6 +15,8 @@ type Frame interface {
 	WriteTo(buffer *bytes.Buffer)
 	shouldBeRetransmitted() bool
 	FrameLength() uint16
+	MarshalJSON() ([]byte, error)
+	UnmarshalJSON(data []byte) error
 }
 
 func NewFrameFromType(frameType FrameType, buffer *bytes.Reader, conn *Connection) (Frame, error) {
@@ -178,6 +180,23 @@ func (frame *PaddingFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *PaddingFrame) shouldBeRetransmitted() bool { return false }
 func (frame *PaddingFrame) FrameLength() uint16         { return 1 }
+func (frame *PaddingFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: PaddingFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *PaddingFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(PaddingFrame)
+	return nil
+}
 func NewPaddingFrame(buffer *bytes.Reader) *PaddingFrame {
 	_, _ = ReadVarInt(buffer) // Discard frame type
 	return new(PaddingFrame)
@@ -191,6 +210,23 @@ func (frame *PingFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *PingFrame) shouldBeRetransmitted() bool { return false }
 func (frame *PingFrame) FrameLength() uint16         { return 1 }
+func (frame *PingFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: PingFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *PingFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(PingFrame)
+	return nil
+}
 func NewPingFrame(buffer *bytes.Reader) *PingFrame {
 	frame := new(PingFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -255,7 +291,23 @@ func (frame *AckFrame) GetAckedPackets() []PacketNumber { // TODO: This is prone
 	}
 	return packets
 }
+func (frame *AckFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: AckFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *AckFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
 
+	*frame = envelope.Message.(AckFrame)
+	return nil
+}
 func (frame AckFrame) Equal(otherFrame AckFrame) bool {
 	if cmp.Equal(frame.AckRangeCount, otherFrame.AckRangeCount) &&
 		cmp.Equal(frame.AckRanges, otherFrame.AckRanges) &&
@@ -303,6 +355,23 @@ func (frame *AckECNFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *AckECNFrame) shouldBeRetransmitted() bool { return false }
 func (frame *AckECNFrame) FrameLength() uint16         { return frame.AckFrame.FrameLength() + uint16(VarIntLen(frame.ECT0Count)+VarIntLen(frame.ECT1Count)+VarIntLen(frame.ECTCECount)) }
+func (frame *AckECNFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: AckECNFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *AckECNFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(AckECNFrame)
+	return nil
+}
 func ReadAckECNFrame(buffer *bytes.Reader, conn *Connection) *AckECNFrame {
 	frame := &AckECNFrame{*ReadAckFrame(buffer), 0, 0, 0}
 
@@ -327,6 +396,23 @@ func (frame *ResetStream) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *ResetStream) shouldBeRetransmitted() bool { return true }
 func (frame *ResetStream) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.StreamId)+VarIntLen(frame.ApplicationErrorCode)+VarIntLen(frame.FinalSize)) }
+func (frame *ResetStream) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: ResetStreamJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *ResetStream) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(ResetStream)
+	return nil
+}
 func NewResetStream(buffer *bytes.Reader) *ResetStream {
 	frame := new(ResetStream)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -349,6 +435,23 @@ func (frame *StopSendingFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *StopSendingFrame) shouldBeRetransmitted() bool { return true }
 func (frame *StopSendingFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.StreamId) + VarIntLen(frame.ApplicationErrorCode)) }
+func (frame *StopSendingFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: StopSendingFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *StopSendingFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(StopSendingFrame)
+	return nil
+}
 func NewStopSendingFrame(buffer *bytes.Reader) *StopSendingFrame {
 	frame := new(StopSendingFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -382,6 +485,23 @@ func ReadCryptoFrame(buffer *bytes.Reader, conn *Connection) *CryptoFrame {
 
 	return frame
 }
+func (frame *CryptoFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: CryptoFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *CryptoFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(CryptoFrame)
+	return nil
+}
 func NewCryptoFrame(cryptoStream *Stream, data []byte) *CryptoFrame {
 	frame := &CryptoFrame{Offset: cryptoStream.WriteOffset, CryptoData: data, Length: uint64(len(data))}
 	cryptoStream.WriteOffset += frame.Length
@@ -401,6 +521,23 @@ func (frame *NewTokenFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *NewTokenFrame) shouldBeRetransmitted() bool { return true }
 func (frame *NewTokenFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(uint64(len(frame.Token)))) + uint16(len(frame.Token)) }
+func (frame *NewTokenFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: NewTokenFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *NewTokenFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(NewTokenFrame)
+	return nil
+}
 func ReadNewTokenFrame(buffer *bytes.Reader, conn *Connection) *NewTokenFrame {
 	frame := new(NewTokenFrame)
 	ReadVarIntValue(buffer) // Discard frame type
@@ -454,6 +591,23 @@ func (frame *StreamFrame) FrameLength() uint16 {
 	}
 	return length + uint16(len(frame.StreamData))
 }
+func (frame *StreamFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: NewTokenFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *StreamFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(StreamFrame)
+	return nil
+}
 func ReadStreamFrame(buffer *bytes.Reader, conn *Connection) *StreamFrame {
 	frame := new(StreamFrame)
 	typeByte, _ := buffer.ReadByte()
@@ -506,6 +660,23 @@ func NewMaxDataFrame(buffer *bytes.Reader) *MaxDataFrame {
 	frame.MaximumData, _, _ = ReadVarIntValue(buffer)
 	return frame
 }
+func (frame *MaxDataFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: MaxDataFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *MaxDataFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(MaxDataFrame)
+	return nil
+}
 
 type MaxStreamDataFrame struct {
 	StreamId          uint64
@@ -520,6 +691,23 @@ func (frame *MaxStreamDataFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *MaxStreamDataFrame) shouldBeRetransmitted() bool { return true }
 func (frame *MaxStreamDataFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.StreamId)+VarIntLen(frame.MaximumStreamData)) }
+func (frame *MaxStreamDataFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: MaxStreamDataFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *MaxStreamDataFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(MaxStreamDataFrame)
+	return nil
+}
 func NewMaxStreamDataFrame(buffer *bytes.Reader) *MaxStreamDataFrame {
 	frame := new(MaxStreamDataFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -548,6 +736,23 @@ func (frame *MaxStreamsFrame) shouldBeRetransmitted() bool { return true }
 func (frame *MaxStreamsFrame) IsUni() bool                 { return frame.StreamsType == UniStreams }
 func (frame *MaxStreamsFrame) IsBidi() bool                { return frame.StreamsType == BidiStreams }
 func (frame *MaxStreamsFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.MaximumStreams)) }
+func (frame *MaxStreamsFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: MaxStreamsFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *MaxStreamsFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(MaxStreamsFrame)
+	return nil
+}
 func NewMaxStreamIdFrame(buffer *bytes.Reader) *MaxStreamsFrame {
 	frame := new(MaxStreamsFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -566,6 +771,23 @@ func (frame *DataBlockedFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *DataBlockedFrame) shouldBeRetransmitted() bool { return false }
 func (frame *DataBlockedFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.DataLimit)) }
+func (frame *DataBlockedFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: DataBlockedFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *DataBlockedFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(DataBlockedFrame)
+	return nil
+}
 func NewBlockedFrame(buffer *bytes.Reader) *DataBlockedFrame {
 	frame := new(DataBlockedFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -586,6 +808,23 @@ func (frame *StreamDataBlockedFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *StreamDataBlockedFrame) shouldBeRetransmitted() bool { return false }
 func (frame *StreamDataBlockedFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.StreamId)+VarIntLen(frame.StreamDataLimit)) }
+func (frame *StreamDataBlockedFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: StreamDataBlockedFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *StreamDataBlockedFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(StreamDataBlockedFrame)
+	return nil
+}
 func NewStreamBlockedFrame(buffer *bytes.Reader) *StreamDataBlockedFrame {
 	frame := new(StreamDataBlockedFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -614,6 +853,23 @@ func (frame *StreamsBlockedFrame) shouldBeRetransmitted() bool { return false }
 func (frame *StreamsBlockedFrame) IsUni() bool                 { return frame.StreamsType == UniStreams }
 func (frame *StreamsBlockedFrame) IsBidi() bool                { return frame.StreamsType == BidiStreams }
 func (frame *StreamsBlockedFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.StreamLimit)) }
+func (frame *StreamsBlockedFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: StreamsBlockedFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *StreamsBlockedFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(StreamsBlockedFrame)
+	return nil
+}
 func NewStreamIdNeededFrame(buffer *bytes.Reader) *StreamsBlockedFrame {
 	frame := new(StreamsBlockedFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -640,6 +896,23 @@ func (frame *NewConnectionIdFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *NewConnectionIdFrame) shouldBeRetransmitted() bool { return true }
 func (frame *NewConnectionIdFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.Sequence) + VarIntLen(frame.RetirePriorTo)) + 1 + uint16(len(frame.ConnectionId)) + 16 }
+func (frame *NewConnectionIdFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: NewConnectionIdFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *NewConnectionIdFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(NewConnectionIdFrame)
+	return nil
+}
 func NewNewConnectionIdFrame(buffer *bytes.Reader) *NewConnectionIdFrame {
 	frame := new(NewConnectionIdFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -663,6 +936,23 @@ func (frame *RetireConnectionId) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *RetireConnectionId) shouldBeRetransmitted() bool { return true }
 func (frame *RetireConnectionId) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.SequenceNumber)) }
+func (frame *RetireConnectionId) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: RetireConnectionIdJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *RetireConnectionId) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(RetireConnectionId)
+	return nil
+}
 func ReadRetireConnectionId(buffer *bytes.Reader) *RetireConnectionId {
 	frame := new(RetireConnectionId)
 	buffer.ReadByte() // Discard frame byte
@@ -681,6 +971,23 @@ func (frame *PathChallenge) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *PathChallenge) shouldBeRetransmitted() bool { return true }
 func (frame *PathChallenge) FrameLength() uint16         { return 1 + 8 }
+func (frame *PathChallenge) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: PathChallengeJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *PathChallenge) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(PathChallenge)
+	return nil
+}
 func ReadPathChallenge(buffer *bytes.Reader) *PathChallenge {
 	frame := new(PathChallenge)
 	buffer.ReadByte() // Discard frame byte
@@ -699,6 +1006,23 @@ func (frame *PathResponse) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *PathResponse) shouldBeRetransmitted() bool { return false }
 func (frame *PathResponse) FrameLength() uint16         { return 1 + 8 }
+func (frame *PathResponse) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: PathResponseJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *PathResponse) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(PathResponse)
+	return nil
+}
 func ReadPathResponse(buffer *bytes.Reader) *PathResponse {
 	frame := new(PathResponse)
 	buffer.ReadByte() // Discard frame byte
@@ -730,6 +1054,23 @@ func (frame *ConnectionCloseFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *ConnectionCloseFrame) shouldBeRetransmitted() bool { return false }
 func (frame *ConnectionCloseFrame) FrameLength() uint16         { return 1 + uint16(VarIntLen(frame.ErrorCode)+VarIntLen(frame.ErrorFrameType)+VarIntLen(frame.ReasonPhraseLength)) + uint16(frame.ReasonPhraseLength) }
+func (frame *ConnectionCloseFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: ConnectionCloseFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *ConnectionCloseFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(ConnectionCloseFrame)
+	return nil
+}
 func NewConnectionCloseFrame(buffer *bytes.Reader) *ConnectionCloseFrame {
 	frame := new(ConnectionCloseFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -762,6 +1103,23 @@ func (frame *ApplicationCloseFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *ApplicationCloseFrame) shouldBeRetransmitted() bool { return false }
 func (frame *ApplicationCloseFrame) FrameLength() uint16         { return 1 + 2 + uint16(VarIntLen(frame.ReasonPhraseLength)) + uint16(frame.ReasonPhraseLength) }
+func (frame *ApplicationCloseFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: ApplicationCloseFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *ApplicationCloseFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(ApplicationCloseFrame)
+	return nil
+}
 func NewApplicationCloseFrame(buffer *bytes.Reader) *ApplicationCloseFrame {
 	frame := new(ApplicationCloseFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type
@@ -783,6 +1141,23 @@ func (frame *HandshakeDoneFrame) WriteTo(buffer *bytes.Buffer) {
 }
 func (frame *HandshakeDoneFrame) shouldBeRetransmitted() bool { return true }
 func (frame *HandshakeDoneFrame) FrameLength() uint16         { return 1 }
+func (frame *HandshakeDoneFrame) MarshalJSON() ([]byte, error) {
+	envelope := Envelope{
+		Type: HandshakeDoneFrameJSON,
+		Message: frame,
+	}
+	return envelope.MarshalJSON()
+}
+func (frame *HandshakeDoneFrame) UnmarshalJSON(data []byte) error {
+	envelope := Envelope{}
+	err := envelope.UnmarshalJSON(data)
+	if err != nil {
+		return err
+	}
+
+	*frame = envelope.Message.(HandshakeDoneFrame)
+	return nil
+}
 func NewHandshakeDoneFrame(buffer *bytes.Reader) *HandshakeDoneFrame {
 	frame := new(HandshakeDoneFrame)
 	_, _ = ReadVarInt(buffer) // Discard frame type

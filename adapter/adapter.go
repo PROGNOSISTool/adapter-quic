@@ -170,7 +170,7 @@ func (a *Adapter) Run() {
 				panic(fmt.Sprintf("Error: Packet '%T' not implemented!", packet))
 			}
 
-			a.incomingPacketSet.Add(NewConcreteSymbol(o))
+			a.incomingPacketSet.Add(NewConcreteSymbol(o.(qt.Packet)))
 			abstractSymbol := NewAbstractSymbol(
 				packetType,
 				HeaderOptions{QUICVersion: version},
@@ -178,7 +178,7 @@ func (a *Adapter) Run() {
 			a.Logger.Printf("Got response: %v", abstractSymbol.String())
 			a.outgoingResponse.Add(abstractSymbol)
 		case o := <- a.outgoingSulPackets:
-			cs := NewConcreteSymbol(o)
+			cs := NewConcreteSymbol(o.(qt.Packet))
 			a.outgoingPacket = &cs
 		case <-a.stop:
 			return

@@ -3,20 +3,18 @@ package adapter
 import (
 	"encoding/json"
 	"fmt"
-	mapset "github.com/tiferrei/golang-set"
+	ms "github.com/tiferrei/golang-set"
+	qt "github.com/tiferrei/quic-tracker"
 	"sort"
 	"strings"
 )
 
-type GenericPacket interface{}
-
 type ConcreteSymbol struct {
-	GenericPacket `json:"Packet"`
+	Packet qt.Packet
 }
 
-func NewConcreteSymbol(packet interface{}) ConcreteSymbol {
-	gp := packet.(GenericPacket)
-	cs := ConcreteSymbol{gp}
+func NewConcreteSymbol(packet qt.Packet) ConcreteSymbol {
+	cs := ConcreteSymbol{Packet: packet}
 	return cs
 }
 
@@ -30,11 +28,11 @@ func (cs *ConcreteSymbol) String() string {
 }
 
 type ConcreteSet struct {
-	SymbolSet mapset.Set // type: ConcreteSymbol
+	SymbolSet ms.Set // type: ConcreteSymbol
 }
 
 func NewConcreteSet() *ConcreteSet {
-	cs := ConcreteSet{SymbolSet: mapset.NewSet()}
+	cs := ConcreteSet{SymbolSet: ms.NewSet()}
 	return &cs
 }
 
@@ -46,28 +44,28 @@ func (as *ConcreteSet) Clear() {
 	as.SymbolSet.Clear()
 }
 
-func (cs *ConcreteSet) UnmarshalJSON(data []byte) error {
-	type jsonSet struct {
-		SymbolSet []ConcreteSymbol
-	}
-	var internal jsonSet
-	err := json.Unmarshal(data, &internal)
-	if err != nil {
-		fmt.Printf("Failed to Unmarshal ConcreteSet: %v\n", err.Error())
-		return err
-	}
+//func (cs *ConcreteSet) UnmarshalJSON(data []byte) error {
+//	type jsonSet struct {
+//		SymbolSet []ConcreteSymbol
+//	}
+//	var internal jsonSet
+//	err := json.Unmarshal(data, &internal)
+//	if err != nil {
+//		fmt.Printf("Failed to Unmarshal ConcreteSet: %v\n", err.Error())
+//		return err
+//	}
+//
+//	interfaceArray := make([]interface{}, len(internal.SymbolSet))
+//	for _, value := range internal.SymbolSet {
+//		interfaceArray = append(interfaceArray, value)
+//	}
+//
+//	cs.SymbolSet = ms.NewSetFromSlice(interfaceArray)
+//
+//	return nil
+//}
 
-	interfaceArray := make([]interface{}, len(internal.SymbolSet))
-	for _, value := range internal.SymbolSet {
-		interfaceArray = append(interfaceArray, value)
-	}
-
-	cs.SymbolSet = mapset.NewSetFromSlice(interfaceArray)
-
-	return nil
-}
-
-	func (cs *ConcreteSet) String() string {
+func (cs *ConcreteSet) String() string {
 	if cs.SymbolSet.Cardinality() == 0 {
 		return "{}"
 	}

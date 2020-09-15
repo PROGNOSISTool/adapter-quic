@@ -4,8 +4,6 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
-	mapset "github.com/tiferrei/golang-set"
-	qt "github.com/tiferrei/quic-tracker"
 	"io"
 	"os"
 	"strings"
@@ -31,7 +29,6 @@ func ReadAbstractConcreteMap(filename string) *AbstractConcreteMap {
 		return acm
 	}
 
-	gobRegister()
 	dataDecoder := gob.NewDecoder(gobFile)
 	err = dataDecoder.Decode(acm)
 	if err != nil && err != io.EOF {
@@ -66,7 +63,6 @@ func (acm *AbstractConcreteMap) SaveToDisk(filename string) error {
 		return err
 	}
 
-	gobRegister()
 	dataEncoder := gob.NewEncoder(dataFile)
 	for key, _ := range *acm {
 		fmt.Printf("[DEBUG] %v\n", key)
@@ -91,48 +87,4 @@ func (acm *AbstractConcreteMap) AddIOs(abstractInputs []AbstractSymbol, abstract
 	abstractOP := AbstractOrderedPair{AbstractInputs: abstractInputs, AbstractOutputs: abstractOutputs}
 	concreteOP := ConcreteOrderedPair{ConcreteInputs: concreteInputs, ConcreteOutputs: concreteOutputs}
 	acm.AddOPs(abstractOP, concreteOP)
-}
-
-func gobRegister() {
-	// Symbols
-	gob.Register(ConcreteSet{})
-	gob.Register(mapset.NewSet())
-	gob.Register(ConcreteSymbol{})
-
-	// Packets
-	gob.Register(qt.InitialPacket{})
-	gob.Register(qt.RetryPacket{})
-	gob.Register(qt.StatelessResetPacket{})
-	gob.Register(qt.VersionNegotiationPacket{})
-	gob.Register(qt.HandshakePacket{})
-	gob.Register(qt.ProtectedPacket{})
-	gob.Register(qt.ZeroRTTProtectedPacket{})
-
-	// Headers
-	gob.Register(new(qt.ShortHeader))
-	gob.Register(new(qt.LongHeader))
-
-	// Streams
-	gob.Register(new(qt.PaddingFrame))
-	gob.Register(new(qt.PingFrame))
-	gob.Register(new(qt.AckFrame))
-	gob.Register(new(qt.AckECNFrame))
-	gob.Register(new(qt.ResetStream))
-	gob.Register(new(qt.StopSendingFrame))
-	gob.Register(new(qt.CryptoFrame))
-	gob.Register(new(qt.NewTokenFrame))
-	gob.Register(new(qt.StreamFrame))
-	gob.Register(new(qt.MaxDataFrame))
-	gob.Register(new(qt.MaxStreamDataFrame))
-	gob.Register(new(qt.MaxStreamsFrame))
-	gob.Register(new(qt.DataBlockedFrame))
-	gob.Register(new(qt.StreamDataBlockedFrame))
-	gob.Register(new(qt.StreamsBlockedFrame))
-	gob.Register(new(qt.NewConnectionIdFrame))
-	gob.Register(new(qt.RetireConnectionId))
-	gob.Register(new(qt.PathChallenge))
-	gob.Register(new(qt.PathResponse))
-	gob.Register(new(qt.ConnectionCloseFrame))
-	gob.Register(new(qt.ApplicationCloseFrame))
-	gob.Register(new(qt.HandshakeDoneFrame))
 }
