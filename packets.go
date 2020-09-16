@@ -22,7 +22,6 @@ type Packet interface {
 	EncryptionLevel() EncryptionLevel
 	ShortString() string
 	MarshalJSON() ([]byte, error)
-	UnmarshalJSON([]byte) error
 	ReceiveContext() PacketContext
 	SetReceiveContext(ctx PacketContext)
 	SendContext() PacketContext
@@ -99,16 +98,6 @@ func (p VersionNegotiationPacket) MarshalJSON() ([]byte, error) {
 		Message: localPacket(p),
 	}
 	return json.Marshal(envelope)
-}
-func (p *VersionNegotiationPacket) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := envelope.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	*p = envelope.Message.(VersionNegotiationPacket)
-	return nil
 }
 func ReadVersionNegotationPacket(buffer *bytes.Reader) *VersionNegotiationPacket {
 	p := new(VersionNegotiationPacket)
@@ -293,16 +282,6 @@ func (p InitialPacket) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-func (p *InitialPacket) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := envelope.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	*p = envelope.Message.(InitialPacket)
-	return nil
-}
 func NewInitialPacket(conn *Connection) *InitialPacket {
 	p := new(InitialPacket)
 	p.Header = NewLongHeader(Initial, conn, PNSpaceInitial)
@@ -346,16 +325,6 @@ func (p RetryPacket) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-func (p *RetryPacket) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := envelope.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	*p = envelope.Message.(RetryPacket)
-	return nil
-}
 
 type HandshakePacket struct {
 	FramePacket
@@ -389,16 +358,6 @@ func (p HandshakePacket) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-func (p *HandshakePacket) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := envelope.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	*p = envelope.Message.(HandshakePacket)
-	return nil
-}
 func NewHandshakePacket(conn *Connection) *HandshakePacket {
 	p := new(HandshakePacket)
 	p.Header = NewLongHeader(Handshake, conn, PNSpaceHandshake)
@@ -417,16 +376,6 @@ func (p ProtectedPacket) MarshalJSON() ([]byte, error) {
 		Message: localPacket(p),
 	}
 	return json.Marshal(envelope)
-}
-func (p *ProtectedPacket) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := envelope.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	*p = envelope.Message.(ProtectedPacket)
-	return nil
 }
 func ReadProtectedPacket(buffer *bytes.Reader, conn *Connection) *ProtectedPacket {
 	p := new(ProtectedPacket)
@@ -466,16 +415,6 @@ func (p ZeroRTTProtectedPacket) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(envelope)
 }
-func (p *ZeroRTTProtectedPacket) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := envelope.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	*p = envelope.Message.(ZeroRTTProtectedPacket)
-	return nil
-}
 func NewZeroRTTProtectedPacket(conn *Connection) *ZeroRTTProtectedPacket {
 	p := new(ZeroRTTProtectedPacket)
 	p.Header = NewLongHeader(ZeroRTTProtected, conn, PNSpaceAppData)
@@ -499,16 +438,6 @@ func (p StatelessResetPacket) MarshalJSON() ([]byte, error) {
 		Message: localPacket(p),
 	}
 	return json.Marshal(envelope)
-}
-func (p *StatelessResetPacket) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := envelope.UnmarshalJSON(data)
-	if err != nil {
-		return err
-	}
-
-	*p = envelope.Message.(StatelessResetPacket)
-	return nil
 }
 func ReadStatelessResetPacket(buffer *bytes.Reader) *StatelessResetPacket {
 	p := new(StatelessResetPacket)

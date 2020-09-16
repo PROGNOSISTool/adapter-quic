@@ -1,10 +1,5 @@
 package quictracker
 
-import (
-	"encoding/json"
-	ms "github.com/mitchellh/mapstructure"
-)
-
 //go:generate jsonenums -type=JSONType
 
 type JSONType int
@@ -84,19 +79,4 @@ var JSONTypeHandlers = map[JSONType]func() interface{} {
 type Envelope struct {
 	Type    JSONType
 	Message interface{}
-}
-
-func (p *Envelope) UnmarshalJSON(data []byte) error {
-	tempEnvelope := map[string]interface{}{}
-	if err := json.Unmarshal(data, &tempEnvelope); err != nil {
-		return err
-	}
-
-	msg := JSONTypeHandlers[p.Type]()
-	if err := ms.Decode(tempEnvelope["Message"], msg); err != nil {
-		return err
-	}
-
-	p.Message = msg
-	return nil
 }

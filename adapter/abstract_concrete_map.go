@@ -3,8 +3,6 @@ package adapter
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"strings"
 )
 
@@ -15,25 +13,6 @@ type AbstractConcreteMap map[string]ConcreteOrderedPair
 func NewAbstractConcreteMap() *AbstractConcreteMap {
 	acm := AbstractConcreteMap{}
 	return &acm
-}
-
-func ReadAbstractConcreteMap(filename string) *AbstractConcreteMap {
-	acm := NewAbstractConcreteMap()
-
-	fmt.Printf("Reading Oracle table...\n")
-	jsonFile, err := ioutil.ReadFile(filename)
-	if err != nil && err != io.EOF {
-		fmt.Printf("Failed to open JSON file: %v\n", err.Error())
-		return acm
-	}
-
-	err = json.Unmarshal(jsonFile, acm)
-	if err != nil {
-		fmt.Printf("Failed to decode JSON file: %v\n", err.Error())
-		return acm
-	}
-
-	return acm
 }
 
 func (acm *AbstractConcreteMap) String() string {

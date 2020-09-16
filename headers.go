@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"encoding/json"
-	"log"
 )
 
 type PacketType uint8
@@ -45,7 +44,6 @@ type Header interface {
 	EncryptionLevel() EncryptionLevel
 	Encode() []byte
 	HeaderLength() int
-	UnmarshalJSON([]byte) error
 	MarshalJSON() ([]byte, error)
 }
 func ReadHeader(buffer *bytes.Reader, conn *Connection) Header {
@@ -104,17 +102,6 @@ func (h *LongHeader) HeaderLength() int {
 		length += h.TokenLength.Length + len(h.Token)
 	}
 	return length
-}
-func (h *LongHeader) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := json.Unmarshal(data, &envelope)
-	if err != nil {
-		log.Printf("Failed to unmarshal LongHeader: %v", err)
-		return err
-	}
-
-	*h = envelope.Message.(LongHeader)
-	return nil
 }
 func (h LongHeader) MarshalJSON() ([]byte, error) {
 	type localHeader LongHeader
@@ -202,17 +189,6 @@ func (h *ShortHeader) GetPacketNumber() PacketNumber { return h.PacketNumber }
 func (h *ShortHeader) GetTruncatedPN() TruncatedPN   { return h.TruncatedPN }
 func (h *ShortHeader) EncryptionLevel() EncryptionLevel      { return PacketTypeToEncryptionLevel[h.GetPacketType()] }
 func (h *ShortHeader) HeaderLength() int                     { return 1 + len(h.DestinationCID) + h.TruncatedPN.Length }
-func (h *ShortHeader) UnmarshalJSON(data []byte) error {
-	envelope := Envelope{}
-	err := json.Unmarshal(data, &envelope)
-	if err != nil {
-		log.Printf("Failed to unmarshal ShortHeader: %v", err)
-		return err
-	}
-
-	*h = envelope.Message.(ShortHeader)
-	return nil
-}
 func (h ShortHeader) MarshalJSON() ([]byte, error) {
 	type localHeader ShortHeader
 	envelope := Envelope{
