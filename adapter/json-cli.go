@@ -51,7 +51,7 @@ const NODE_PROGRAM string = `const fs=require('fs'),readFiles=()=>{const e=fs.re
 //`
 
 func hasNodeInstalled() (bool, error) {
-	_, err := exec.Command("sh","-c","\"command -v node\"").Output()
+    _, err := exec.Command("sh","-c","command -v node").Output()
 	if err != nil {
 		if exiterr, ok := err.(*exec.ExitError); ok {
 			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
