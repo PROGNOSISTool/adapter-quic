@@ -50,10 +50,8 @@ const NODE_PROGRAM string = `const fs=require('fs'),readFiles=()=>{const e=fs.re
 //`
 
 func RunJSONCLI() error {
-	out2, err2 := exec.Command("bash","-c","echo $PATH").Output()
-	fmt.Printf(string(out2), err2)
-	cmd := fmt.Sprintf("echo \"%v\" | node", NODE_PROGRAM)
-	out, err := exec.Command("bash","-c",cmd).Output()
+    cmd := fmt.Sprintf("echo \"%v\" | /usr/bin/env node", NODE_PROGRAM)
+	out, err := exec.Command("sh","-c",cmd).Output()
 	if err != nil {
 		fmt.Printf(fmt.Sprintf("Failed to run JSON CLI: %v\n", err))
 		return err

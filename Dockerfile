@@ -14,6 +14,7 @@ WORKDIR /go/src/github.com/tiferrei/quic-tracker
 RUN go build -o /run_adapter bin/run_adapter/main.go
 
 FROM alpine as runtime
+RUN apk add --no-cache nodejs
 COPY --from=build /run_adapter /usr/bin/run_adapter
 WORKDIR /root
 ENTRYPOINT ["/usr/bin/run_adapter"]
