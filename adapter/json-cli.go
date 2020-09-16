@@ -3,6 +3,7 @@ package adapter
 import (
 	"fmt"
 	"os/exec"
+	"syscall"
 )
 
 const NODE_PROGRAM string = `const fs=require('fs'),readFiles=()=>{const e=fs.readdirSync('.').filter(e=>e.match(/oracleTable(-\d+)?\.json/g));console.log('Combining Oracle Tables: '+e);let s=[];for(const c of e)try{const e=fs.readFileSync(c),o=JSON.parse(e);s.push(o)}catch(e){console.log(e),process.exit(1)}return s},combineObjects=e=>Object.assign({},...e),saveObject=(e,s)=>{const c=JSON.stringify(e);try{fs.writeFileSync(s,c)}catch(e){console.log(e),process.exit(1)}},main=()=>{const e=readFiles();oracleTable=combineObjects(e),saveObject(oracleTable,'oracleTable.json')};main();`
@@ -49,7 +50,35 @@ const NODE_PROGRAM string = `const fs=require('fs'),readFiles=()=>{const e=fs.re
 //main()
 //`
 
+func hasNodeInstalled() (bool, error) {
+	_, err := exec.Command("sh","-c","program -v node").Output()
+	if err != nil {
+		if exiterr, ok := err.(*exec.ExitError); ok {
+			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+				if status.ExitStatus() != 0 {
+					return false, nil
+				}
+			}
+		} else {
+			fmt.Printf(fmt.Sprintf("Failed to check for Node: %v\n", err))
+			return false, err
+		}
+	}
+	return true, nil
+}
+
 func RunJSONCLI() error {
+	hasNode, err := hasNodeInstalled()
+	if err != nil {
+		return err
+	}
+
+	if !hasNode {
+		err := fmt.Errorf("NodeJS not found.")
+		fmt.Printf(fmt.Sprintf("Failed to run JSON CLI: %v\n", err))
+		return err
+	}
+
     cmd := fmt.Sprintf("echo \"%v\" | /usr/bin/env node", NODE_PROGRAM)
 	out, err := exec.Command("sh","-c",cmd).Output()
 	if err != nil {

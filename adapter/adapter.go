@@ -332,5 +332,5 @@ func (a *Adapter) SaveTrace(filename string) {
 
 func (a *Adapter) SaveOracleTable(filename string) {
 	writeJson(filename, a.oracleTable)
-	RunJSONCLI()
+	_ = RunJSONCLI()
 }
