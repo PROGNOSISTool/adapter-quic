@@ -16,7 +16,6 @@ import (
 type Adapter struct {
 	connection             *qt.Connection
 	http3                  bool
-	trace                  *qt.Trace
 	agents                 *agents.ConnectionAgents
 	server                 *tcp.Server
 	stop                   chan bool
@@ -53,12 +52,6 @@ func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 
 	adapter.incomingPacketSet = *NewConcreteSet()
 	adapter.outgoingResponse = *NewAbstractSet()
 	adapter.oracleTable = *NewAbstractConcreteMap()
-
-	adapter.trace = qt.NewTrace("Adapter", 1, sulAddress)
-	adapter.trace.AttachTo(adapter.connection)
-	adapter.trace.StartedAt = time.Now().Unix()
-	ip := strings.Replace(adapter.connection.ConnectedIp().String(), "[", "", -1)
-	adapter.trace.Ip = ip[:strings.LastIndex(ip, ":")]
 
 	adapter.agents = agents.AttachAgentsToConnection(adapter.connection, agents.GetBasicAgents()...)
 	adapter.agents.Get("ClosingAgent").(*agents.ClosingAgent).WaitForFirstPacket = true
@@ -189,8 +182,6 @@ func (a *Adapter) Run() {
 }
 
 func (a *Adapter) Stop() {
-	a.trace.Complete(a.connection)
-	a.SaveTrace("trace.json")
 	a.SaveOracleTable(fmt.Sprintf("oracleTable-%d.json", time.Now().Unix()) )
 	a.agents.Stop("SendingAgent")
 	a.agents.StopAll()
@@ -208,7 +199,6 @@ func (a *Adapter) Reset(client *tcp.Client) {
 	a.outgoingPacket = nil
 	a.incomingPacketSet = *NewConcreteSet()
 	a.outgoingResponse = *NewAbstractSet()
-	a.trace.AttachTo(a.connection)
 	a.agents = agents.AttachAgentsToConnection(a.connection, agents.GetBasicAgents()...)
 	a.agents.Get("ClosingAgent").(*agents.ClosingAgent).WaitForFirstPacket = true
 	a.agents.Add(&agents.HandshakeAgent{
@@ -323,14 +313,11 @@ func writeJson(filename string, object interface{}) {
 	}
 }
 
-func (a *Adapter) SaveTrace(filename string) {
-	a.connection.QLog.Title = "QUIC Adapter Trace"
-	a.connection.QLogTrace.Sort()
-	a.trace.QLog = a.connection.QLog
-	writeJson(filename, a.trace)
-}
-
 func (a *Adapter) SaveOracleTable(filename string) {
+	for key := range a.oracleTable {
+		fmt.Printf("[DEBUG]: %v\n", key)
+	}
+
 	writeJson(filename, a.oracleTable)
 	_ = RunJSONCLI()
 }
