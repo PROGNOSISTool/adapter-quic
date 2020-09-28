@@ -148,6 +148,9 @@ func (a *Adapter) Run() {
 			case *qt.RetryPacket:
 				packetType = qt.Retry
 				version = nil
+			case *qt.StatelessResetPacket:
+				packetType = qt.StatelessReset
+				version = nil
 			case qt.Framer:
 				packetType = packet.GetHeader().GetPacketType()
 				// TODO: GetFrames() might not return a deterministic order. Idk yet.

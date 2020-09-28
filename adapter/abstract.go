@@ -17,6 +17,7 @@ var packetTypeToString = map[qt.PacketType]string {
 	qt.Handshake: "HANDSHAKE",
 	qt.ZeroRTTProtected: "ZERO",
 	qt.ShortHeaderPacket: "SHORT",
+	qt.StatelessReset : "RESET",
 }
 
 var stringToPacketType = map[string]qt.PacketType {
@@ -26,6 +27,7 @@ var stringToPacketType = map[string]qt.PacketType {
 	"HANDSHAKE": qt.Handshake,
 	"ZERO": qt.ZeroRTTProtected,
 	"SHORT": qt.ShortHeaderPacket,
+	"RESET": qt.StatelessReset,
 }
 
 type HeaderOptions struct {

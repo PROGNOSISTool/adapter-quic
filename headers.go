@@ -14,6 +14,7 @@ const (
 	Handshake        PacketType = 0x2
 	Retry            PacketType = 0x3
 
+	StatelessReset     PacketType = 0xfd
 	VersionNegotiation PacketType = 0xfe // TODO: Find a way around this
 	ShortHeaderPacket  PacketType = 0xff // TODO: Find a way around this
 )
@@ -23,8 +24,8 @@ var packetTypeToString = map[PacketType]string{
 	Retry: "Retry",
 	Handshake: "Handshake",
 	ZeroRTTProtected: "0-RTT Protected",
-
 	ShortHeaderPacket: "1-RTT Protected",
+	StatelessReset: "Stateless Reset",
 }
 
 var packetTypeToPNSPace = map[PacketType]PNSpace {
@@ -32,8 +33,8 @@ var packetTypeToPNSPace = map[PacketType]PNSpace {
 	Retry: PNSpaceNoSpace,
 	Handshake: PNSpaceHandshake,
 	ZeroRTTProtected: PNSpaceAppData,
-
 	ShortHeaderPacket: PNSpaceAppData,
+	StatelessReset: PNSpaceNoSpace,
 }
 
 type Header interface {
