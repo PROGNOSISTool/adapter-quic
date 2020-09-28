@@ -28,10 +28,6 @@ var stringToPacketType = map[string]qt.PacketType {
 	"SHORT": qt.ShortHeaderPacket,
 }
 
-var frameTypeToFrame = map[qt.FrameType]qt.Frame {
-	qt.PaddingFrameType: new(qt.PaddingFrame),
-}
-
 type HeaderOptions struct {
 	QUICVersion *uint32
 }
