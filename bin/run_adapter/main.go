@@ -15,7 +15,6 @@ func main() {
 	sulAddress := readEnvWithFallback("SUL_ADDRESS", "implementation:4433")
 	sulName := readEnvWithFallback("SUL_NAME", "quic.tiferrei.com")
 	http3 := readEnvWithFallback("HTTP3", "false")
-	performanceMode := readEnvWithFallback("PERFORMANCE_MODE", "false")
 
 	http3Bool, err := strconv.ParseBool(http3)
 	if err != nil {
@@ -23,13 +22,7 @@ func main() {
 		return
 	}
 
-	performanceModeBool, err := strconv.ParseBool(performanceMode)
-	if err != nil {
-		fmt.Printf("Error: Invalid PERFORMANCE_MODE value, must be bool.")
-		return
-	}
-
-	sulAdapter, err := adapter.NewAdapter(adapterAddress, sulAddress, sulName, http3Bool, performanceModeBool)
+	sulAdapter, err := adapter.NewAdapter(adapterAddress, sulAddress, sulName, http3Bool)
 	if err != nil {
 		fmt.Printf("Failed to create Adapter: %v", err.Error())
 		return

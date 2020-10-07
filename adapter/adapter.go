@@ -16,7 +16,6 @@ import (
 type Adapter struct {
 	connection             *qt.Connection
 	http3                  bool
-	performanceMode		   bool
 	agents                 *agents.ConnectionAgents
 	server                 *tcp.Server
 	stop                   chan bool
@@ -31,7 +30,7 @@ type Adapter struct {
 	oracleTable            AbstractConcreteMap
 }
 
-func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 bool, performanceMode bool) (*Adapter, error) {
+func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 bool) (*Adapter, error) {
 	adapter := new(Adapter)
 
 	adapter.Logger = log.New(os.Stderr, "[ADAPTER] ", log.Lshortfile)
@@ -39,11 +38,9 @@ func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 
 	adapter.Logger.Printf("SUL Address: %v", sulAddress)
 	adapter.Logger.Printf("SUL Name: %v", sulName)
 	adapter.Logger.Printf("HTTP3: %v", http3)
-	adapter.Logger.Printf("Performance Mode: %v", performanceMode)
 
 	adapter.incomingLearnerSymbols = qt.NewBroadcaster(1000)
 	adapter.http3 = http3
-	adapter.performanceMode = performanceMode
 	adapter.stop = make(chan bool, 1)
 	adapter.server = tcp.New(adapterAddress)
 
@@ -278,9 +275,7 @@ func (a *Adapter) handleNewAbstractQuery(client *tcp.Client, query []string, wai
 		// If we don't have the requested encryption level, skip and return EMPTY.
 		if a.connection.CryptoState(qt.PacketTypeToEncryptionLevel[abstractSymbol.PacketType]) != nil {
 			a.incomingLearnerSymbols.Submit(abstractSymbol)
-			if !a.performanceMode {
-				time.Sleep(waitTime)
-			}
+			time.Sleep(waitTime)
 		} else {
 			a.Logger.Printf("Unable to send packet at " + qt.PacketTypeToEncryptionLevel[abstractSymbol.PacketType].String() + " EL.")
 		}
@@ -291,7 +286,7 @@ func (a *Adapter) handleNewAbstractQuery(client *tcp.Client, query []string, wai
 
 		// If we received a Retry, give the connection time to restart.
 		if strings.Contains(a.outgoingResponse.String(), "RETRY") {
-			time.Sleep(300 * time.Millisecond)
+			time.Sleep(400 * time.Millisecond)
 		}
 	}
 
