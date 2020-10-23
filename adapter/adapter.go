@@ -17,6 +17,7 @@ type Adapter struct {
 	connection             *qt.Connection
 	trace                  *qt.Trace
 	http3                  bool
+	waitTime               time.Duration
 	agents                 *agents.ConnectionAgents
 	server                 *tcp.Server
 	stop                   chan bool
@@ -31,7 +32,7 @@ type Adapter struct {
 	oracleTable            AbstractConcreteMap
 }
 
-func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 bool, tracing bool) (*Adapter, error) {
+func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 bool, tracing bool, waitTime time.Duration) (*Adapter, error) {
 	adapter := new(Adapter)
 
 	adapter.Logger = log.New(os.Stderr, "[ADAPTER] ", log.Lshortfile)
@@ -40,6 +41,7 @@ func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 
 	adapter.Logger.Printf("SUL Name: %v", sulName)
 	adapter.Logger.Printf("HTTP3: %v", http3)
 	adapter.Logger.Printf("TRACING: %v", tracing)
+	adapter.Logger.Printf("Wait Time: %v", waitTime)
 
 	adapter.incomingLearnerSymbols = qt.NewBroadcaster(1000)
 	adapter.http3 = http3
@@ -255,7 +257,6 @@ func (a *Adapter) handleNewServerInput(client *tcp.Client, message string) {
 	message = strings.TrimSuffix(message, "\r")
 	query := strings.Split(message, " ")
 	a.Logger.Printf("Server input: %v", query)
-	waitTime := 500 * time.Millisecond
 	if len(query) == 1 {
 		switch query[0] {
 		case "START":
@@ -267,14 +268,14 @@ func (a *Adapter) handleNewServerInput(client *tcp.Client, message string) {
 			_ = client.Close()
 			os.Exit(0)
 		default:
-			a.handleNewAbstractQuery(client, query, waitTime)
+			a.handleNewAbstractQuery(client, query)
 		}
 	} else {
-		a.handleNewAbstractQuery(client, query, waitTime)
+		a.handleNewAbstractQuery(client, query)
 	}
 }
 
-func (a *Adapter) handleNewAbstractQuery(client *tcp.Client, query []string, waitTime time.Duration) {
+func (a *Adapter) handleNewAbstractQuery(client *tcp.Client, query []string) {
 	abstractInputs := []AbstractSymbol{}
 	abstractOutputs := []AbstractSet{}
 	concreteInputs := []*ConcreteSymbol{}
@@ -289,7 +290,7 @@ func (a *Adapter) handleNewAbstractQuery(client *tcp.Client, query []string, wai
 		// If we don't have the requested encryption level, skip and return EMPTY.
 		if a.connection.CryptoState(qt.PacketTypeToEncryptionLevel[abstractSymbol.PacketType]) != nil {
 			a.incomingLearnerSymbols.Submit(abstractSymbol)
-			time.Sleep(waitTime)
+			time.Sleep(a.waitTime)
 		} else {
 			a.Logger.Printf("Unable to send packet at " + qt.PacketTypeToEncryptionLevel[abstractSymbol.PacketType].String() + " EL.")
 		}
