@@ -15,6 +15,7 @@ import (
 
 type Adapter struct {
 	connection             *qt.Connection
+	trace                  *qt.Trace
 	http3                  bool
 	agents                 *agents.ConnectionAgents
 	server                 *tcp.Server
@@ -30,7 +31,7 @@ type Adapter struct {
 	oracleTable            AbstractConcreteMap
 }
 
-func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 bool) (*Adapter, error) {
+func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 bool, tracing bool) (*Adapter, error) {
 	adapter := new(Adapter)
 
 	adapter.Logger = log.New(os.Stderr, "[ADAPTER] ", log.Lshortfile)
@@ -38,6 +39,7 @@ func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 
 	adapter.Logger.Printf("SUL Address: %v", sulAddress)
 	adapter.Logger.Printf("SUL Name: %v", sulName)
 	adapter.Logger.Printf("HTTP3: %v", http3)
+	adapter.Logger.Printf("TRACING: %v", tracing)
 
 	adapter.incomingLearnerSymbols = qt.NewBroadcaster(1000)
 	adapter.http3 = http3
@@ -45,6 +47,14 @@ func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 
 	adapter.server = tcp.New(adapterAddress)
 
 	adapter.connection, _ = qt.NewDefaultConnection(sulAddress, sulName, nil, false, "hq", adapter.http3)
+	if tracing {
+		adapter.trace = qt.NewTrace("Adapter", 1, sulAddress)
+		adapter.trace.AttachTo(adapter.connection)
+		adapter.trace.StartedAt = time.Now().Unix()
+		ip := strings.Replace(adapter.connection.ConnectedIp().String(), "[", "", -1)
+		adapter.trace.Ip = ip[:strings.LastIndex(ip, ":")]
+	}
+
 	adapter.incomingSulPackets = adapter.connection.IncomingPackets.RegisterNewChan(1000)
 	adapter.outgoingSulPackets = adapter.connection.OutgoingPackets.RegisterNewChan(1000)
 
@@ -185,7 +195,8 @@ func (a *Adapter) Run() {
 }
 
 func (a *Adapter) Stop() {
-	a.SaveOracleTable(fmt.Sprintf("oracleTable-%d.json", time.Now().Unix()) )
+	a.SaveOracleTable(fmt.Sprintf("oracleTable-%d.json", time.Now().Unix()))
+	a.SaveTrace(fmt.Sprintf("trace-%d.json", time.Now().Unix()))
 	a.agents.Stop("SendingAgent")
 	a.agents.StopAll()
 	a.stop <- true
@@ -197,6 +208,9 @@ func (a *Adapter) Reset(client *tcp.Client) {
 	a.agents.StopAll()
 	a.connection.Close()
 	a.connection, _ = qt.NewDefaultConnection(a.connection.ConnectedIp().String(), a.connection.ServerName, nil, false, "hq", a.http3)
+	if a.trace != nil {
+		a.trace.AttachTo(a.connection)
+	}
 	a.incomingSulPackets = a.connection.IncomingPackets.RegisterNewChan(1000)
 	a.outgoingSulPackets = a.connection.OutgoingPackets.RegisterNewChan(1000)
 	a.outgoingPacket = nil
@@ -313,6 +327,22 @@ func writeJson(filename string, object interface{}) {
 
 		outFile.Write(content)
 		outFile.Close()
+	}
+}
+
+func (a *Adapter) SaveTrace(filename string) {
+	if a.trace != nil {
+		a.connection.QLog.Title = "QUIC Adapter Trace"
+		a.connection.QLogTrace.Sort()
+		a.trace.QLog = a.connection.QLog
+		outFile, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
+		if err == nil {
+			content, err := json.Marshal(a.trace)
+			if err == nil {
+				outFile.Write(content)
+				outFile.Close()
+			}
+		}
 	}
 }
 
