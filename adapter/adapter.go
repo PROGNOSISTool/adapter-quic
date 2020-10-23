@@ -241,7 +241,7 @@ func (a *Adapter) handleNewServerInput(client *tcp.Client, message string) {
 	message = strings.TrimSuffix(message, "\r")
 	query := strings.Split(message, " ")
 	a.Logger.Printf("Server input: %v", query)
-	waitTime := 300 * time.Millisecond
+	waitTime := 500 * time.Millisecond
 	if len(query) == 1 {
 		switch query[0] {
 		case "START":
@@ -255,8 +255,6 @@ func (a *Adapter) handleNewServerInput(client *tcp.Client, message string) {
 		default:
 			a.handleNewAbstractQuery(client, query, waitTime)
 		}
-	} else if len(query) >= 8 {
-		a.handleNewAbstractQuery(client, query, waitTime + 200 * time.Millisecond)
 	} else {
 		a.handleNewAbstractQuery(client, query, waitTime)
 	}
