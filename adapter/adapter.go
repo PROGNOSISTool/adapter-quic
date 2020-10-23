@@ -45,6 +45,7 @@ func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 
 
 	adapter.incomingLearnerSymbols = qt.NewBroadcaster(1000)
 	adapter.http3 = http3
+	adapter.waitTime = waitTime
 	adapter.stop = make(chan bool, 1)
 	adapter.server = tcp.New(adapterAddress)
 
