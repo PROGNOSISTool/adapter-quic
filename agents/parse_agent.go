@@ -189,6 +189,19 @@ func (a *ParsingAgent) filterOutRetransmits(framer Framer) Framer {
 				framer.RemoveAtIndex(index)
 				deleted++
 				break
+			} else if framer.PNSpace() == PNSpaceAppData && frame.FrameType() == StreamType {
+				if streamFrame, ok := frame.(*StreamFrame); ok {
+					if loggedStreamFrame, ok := loggedFrame.(*StreamFrame); ok {
+						if isEqual := bytes.Compare(streamFrame.StreamData, loggedStreamFrame.StreamData);
+						isEqual == 0 &&
+						streamFrame.StreamId == loggedStreamFrame.StreamId &&
+						streamFrame.Offset == loggedStreamFrame.Offset {
+							framer.RemoveAtIndex(index)
+							deleted++
+							break
+						}
+					}
+				}
 			}
 		}
 	}
