@@ -255,6 +255,8 @@ func (a *Adapter) handleNewServerInput(client *tcp.Client, message string) {
 		default:
 			a.handleNewAbstractQuery(client, query, waitTime)
 		}
+	} else if len(query) >= 8 {
+		a.handleNewAbstractQuery(client, query, waitTime + 200 * time.Millisecond)
 	} else {
 		a.handleNewAbstractQuery(client, query, waitTime)
 	}
