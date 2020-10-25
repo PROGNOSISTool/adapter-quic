@@ -197,6 +197,10 @@ func (a *Adapter) Run() {
 				packetNumberPointer = nil
 			}
 
+			if a.incomingRequest.HeaderOptions.QUICVersion == nil {
+				version = nil
+			}
+
 			abstractSymbol := NewAbstractSymbol(
 				packetType,
 				HeaderOptions{QUICVersion: version, PacketNumber: packetNumberPointer},
