@@ -143,6 +143,7 @@ func (a *Adapter) Run() {
 							a.agents.Get("HTTP09Agent").(*agents.HTTP09Agent).SendRequest("/index.html", "GET", a.connection.Host.String(), nil)
 						}
 					}
+					time.Sleep(1 * time.Millisecond)
 					a.agents.Get("StreamAgent").(*agents.StreamAgent).SendFromQueue <- qt.FrameRequest{qt.StreamType, encLevel}
 				case qt.MaxDataType:
 				case qt.MaxStreamDataType:
@@ -152,7 +153,7 @@ func (a *Adapter) Run() {
 				}
 			}
 			// FIXME: This ensures the request gets queued before packets are sent. I'm not proud of it but it works.
-			time.Sleep(5 * time.Millisecond)
+			time.Sleep(3 * time.Millisecond)
 			a.Logger.Printf("Submitting request: %v", as.String())
 			a.connection.PreparePacket.Submit(encLevel)
 		case o := <-a.incomingSulPackets:
