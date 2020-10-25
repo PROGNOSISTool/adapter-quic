@@ -90,16 +90,21 @@ func NewAbstractSymbolFromString(message string) AbstractSymbol {
 		// We anticipate there might be more, so we split the string.
 		headerOptionSlice := strings.Split(subgroups[3], ",")
 		// The first option is the Packet Number.
-		parsedPacketNumber, err := strconv.ParseUint(headerOptionSlice[0], 10, 64)
-		if err == nil {
-			packetNumber := qt.PacketNumber(parsedPacketNumber)
-			headerOptions.PacketNumber = &packetNumber
+		if headerOptionSlice[0] != "?" {
+			parsedPacketNumber, err := strconv.ParseUint(headerOptionSlice[0], 10, 64)
+			if err == nil {
+				packetNumber := qt.PacketNumber(parsedPacketNumber)
+				headerOptions.PacketNumber = &packetNumber
+			}
 		}
+
 		// The second option is the QUIC Version.
-		parsedVersion, err := strconv.ParseUint(headerOptionSlice[1][2:], 16, 32)
-		if err == nil {
-			version32 := uint32(parsedVersion)
-			headerOptions.QUICVersion = &version32
+		if headerOptionSlice[1] != "?" {
+			parsedVersion, err := strconv.ParseUint(headerOptionSlice[1][2:], 16, 32)
+			if err == nil {
+				version32 := uint32(parsedVersion)
+				headerOptions.QUICVersion = &version32
+			}
 		}
 	}
 

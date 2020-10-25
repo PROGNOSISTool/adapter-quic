@@ -165,7 +165,7 @@ func (a *HandshakeAgent) Run(conn *Connection) {
 			case <-pingTimer.C:
 				// FIXME: I don't actually understand the purpose of this timer.
 				if firstInitialReceived && !a.DisableFrameSending {
-					conn.PreparePacket.Submit(EncryptionLevelBest)
+					conn.PreparePacket.Submit(PacketToPrepare{EncryptionLevelBest, nil})
 				}
 			case <-conn.ConnectionRestarted:
 				incPackets = conn.IncomingPackets.RegisterNewChan(1000)

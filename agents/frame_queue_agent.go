@@ -130,7 +130,7 @@ func (a *FrameQueueAgent) Run(conn *Connection) {
 				qf := i.(QueuedFrame)
 				heap.Push(frameBuffer[qf.EncryptionLevel], qf.Frame)
 				a.Logger.Printf("Received a %v frame for encryption level %s\n", qf.FrameType().String(), qf.EncryptionLevel)
-				conn.PreparePacket.Submit(qf.EncryptionLevel)
+				conn.PreparePacket.Submit(PacketToPrepare{qf.EncryptionLevel, nil})
 			case args := <-a.requestFrame:
 				var frames []Frame
 				buffer := frameBuffer[args.level]
@@ -145,7 +145,7 @@ func (a *FrameQueueAgent) Run(conn *Connection) {
 
 				if !interfaceIsNil(i) && args.availableSpace < int(i.(Frame).FrameLength()) {
 					a.Logger.Printf("Unable to put %d-byte frame into %d-byte buffer\n", i.(Frame).FrameLength(), args.availableSpace)
-					a.conn.PreparePacket.Submit(args.level)
+					a.conn.PreparePacket.Submit(PacketToPrepare{args.level, nil})
 				}
 				a.frames <- frames
 			case <-a.close:
