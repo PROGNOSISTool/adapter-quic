@@ -42,7 +42,7 @@ func (ho *HeaderOptions) String() string {
 	}
 	packetNumber := "?"
 	if ho.PacketNumber != nil {
-		version = fmt.Sprintf("%#d", *ho.PacketNumber)
+		packetNumber = fmt.Sprintf("%#d", *ho.PacketNumber)
 	}
 	return packetNumber + "," + version
 }
