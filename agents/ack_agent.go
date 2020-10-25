@@ -56,7 +56,7 @@ func (a *AckAgent) Run(conn *Connection) {
 					}
 
 					if !a.DisableAcks[p.PNSpace()] && p.ShouldBeAcknowledged() {
-						a.conn.PreparePacket.Submit(PacketToPrepare{p.EncryptionLevel(), nil})
+						a.conn.PreparePacket.Submit(p.EncryptionLevel())
 						a.TotalDataAcked[p.PNSpace()] += uint64(len(p.Encode(p.EncodePayload()))) // TODO: See following todo
 					}
 				}
@@ -75,7 +75,7 @@ func (a *AckAgent) Run(conn *Connection) {
 					if args.availableSpace >= int(f.FrameLength()) {
 						a.frames <- []Frame{f}
 					} else {
-						a.conn.PreparePacket.Submit(PacketToPrepare{args.level, nil})
+						a.conn.PreparePacket.Submit(args.level)
 						a.frames <- nil
 					}
 				} else {

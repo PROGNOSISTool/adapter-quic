@@ -155,7 +155,7 @@ func (a *StreamAgent) send(streamId uint64, data []byte, close bool) error {
 		a.SubmitFrame(qf)
 	} else {
 
-		a.conn.PreparePacket.Submit(PacketToPrepare{EncryptionLevelBestAppData, nil})
+		a.conn.PreparePacket.Submit(EncryptionLevelBestAppData)
 	}
 
 	return nil

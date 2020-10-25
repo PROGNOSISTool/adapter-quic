@@ -110,9 +110,17 @@ func (a *Adapter) Run() {
 			as := i.(AbstractSymbol)
 			pnSpace := qt.PacketTypeToPNSpace[as.PacketType]
 			encLevel := qt.PacketTypeToEncryptionLevel[as.PacketType]
+
 			if as.HeaderOptions.QUICVersion != nil {
 				a.connection.Version = *as.HeaderOptions.QUICVersion
 			}
+
+			if as.HeaderOptions.PacketNumber != nil {
+				a.connection.PacketNumberLock.Lock()
+				a.connection.PacketNumber[pnSpace] = *as.HeaderOptions.PacketNumber
+				a.connection.PacketNumberLock.Unlock()
+			}
+
 			frameTypesSlice := []qt.FrameType{}
 			for _, frameType := range as.FrameTypes.ToSlice() {
 				frameTypesSlice = append(frameTypesSlice, frameType.(qt.FrameType))
@@ -146,7 +154,7 @@ func (a *Adapter) Run() {
 			// FIXME: This ensures the request gets queued before packets are sent. I'm not proud of it but it works.
 			time.Sleep(5 * time.Millisecond)
 			a.Logger.Printf("Submitting request: %v", as.String())
-			a.connection.PreparePacket.Submit(qt.PacketToPrepare{encLevel, as.HeaderOptions.PacketNumber})
+			a.connection.PreparePacket.Submit(encLevel)
 		case o := <-a.incomingSulPackets:
 			var packetType qt.PacketType
 			version := &a.connection.Version

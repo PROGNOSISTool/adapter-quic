@@ -38,9 +38,7 @@ func (a *SendingAgent) Run(conn *Connection) {
 
 	initialSent := false
 
-	fillPacket := func(packet Framer, prepare PacketToPrepare) Framer {
-		pn := prepare.PacketNumber
-		level := prepare.EncryptionLevel
+	fillPacket := func(packet Framer, level EncryptionLevel) Framer {
 		spaceLeft := int(a.MTU) - packet.GetHeader().HeaderLength() - conn.CryptoState(level).Write.Overhead()
 
 		a.FrameProducerLock.Lock()
@@ -78,13 +76,6 @@ func (a *SendingAgent) Run(conn *Connection) {
 			return nil
 		}
 
-		if pn != nil {
-			packet.GetHeader().SetPacketNumber(*pn)
-			conn.PacketNumberLock.Lock()
-			conn.PacketNumber[packet.PNSpace()]-- // Avoids PN skipping
-			conn.PacketNumberLock.Unlock()
-		}
-
 		return packet
 	}
 
@@ -94,8 +85,7 @@ func (a *SendingAgent) Run(conn *Connection) {
 		for {
 			select {
 			case i := <-preparePacket:
-				prepare := i.(PacketToPrepare)
-				eL := prepare.EncryptionLevel
+				eL := i.(EncryptionLevel)
 
 				if eL == EncryptionLevelBest || eL == EncryptionLevelBestAppData {
 					nEL := chooseBestEncryptionLevel(encryptionLevels, eL == EncryptionLevelBestAppData)
@@ -104,7 +94,7 @@ func (a *SendingAgent) Run(conn *Connection) {
 					eL = nEL
 				}
 				if encryptionLevels[DirectionalEncryptionLevel{EncryptionLevel: eL, Read: false, Available: true}]  {
-					p := fillPacket(NewInitialPacket(conn), prepare)
+					p := fillPacket(NewInitialPacket(conn), eL)
 					if p != nil {
 						if eL == EncryptionLevelInitial {
 							var initialLength int
@@ -143,7 +133,7 @@ func (a *SendingAgent) Run(conn *Connection) {
 					if !a.DontCoalesceZeroRTT && bestEncryptionLevels[EncryptionLevelBestAppData] == EncryptionLevel0RTT {
 						// Try to prepare a 0-RTT packet and squeeze it after the Initial
 						zp := NewZeroRTTProtectedPacket(conn)
-						fillPacket(zp, PacketToPrepare{EncryptionLevel0RTT, nil})
+						fillPacket(zp, EncryptionLevel0RTT)
 						if len(zp.GetFrames()) > 0 {
 							zpBytes := conn.EncodeAndEncrypt(zp, EncryptionLevel0RTT)
 							initialFrames := initial.GetFrames()
