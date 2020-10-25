@@ -44,7 +44,7 @@ func (ho *HeaderOptions) String() string {
 	if ho.PacketNumber != nil {
 		version = fmt.Sprintf("%#d", *ho.PacketNumber)
 	}
-	return fmt.Sprintf("%#v,%#v", packetNumber, version)
+	return packetNumber + "," + version
 }
 // INITIAL(25,0xff00001d)[ACK,CRYPTO]
 // Is represented as:
