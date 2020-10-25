@@ -94,7 +94,20 @@ func (a *SendingAgent) Run(conn *Connection) {
 					eL = nEL
 				}
 				if encryptionLevels[DirectionalEncryptionLevel{EncryptionLevel: eL, Read: false, Available: true}]  {
-					p := fillPacket(NewInitialPacket(conn), eL)
+					var p Packet
+					switch eL {
+					case EncryptionLevelInitial:
+						p = fillPacket(NewInitialPacket(conn), EncryptionLevelInitial)
+					case EncryptionLevelHandshake:
+						p = fillPacket(NewHandshakePacket(conn), EncryptionLevelHandshake)
+					case EncryptionLevel1RTT:
+						p = fillPacket(NewProtectedPacket(conn), EncryptionLevel1RTT)
+					case EncryptionLevel0RTT:
+						if initialSent {
+							p = fillPacket(NewZeroRTTProtectedPacket(conn), EncryptionLevel0RTT)
+						}
+					}
+
 					if p != nil {
 						if eL == EncryptionLevelInitial {
 							var initialLength int
@@ -104,7 +117,7 @@ func (a *SendingAgent) Run(conn *Connection) {
 								initialLength = MinimumInitialLength
 							}
 							initialLength -= conn.CryptoState(EncryptionLevelInitial).Write.Overhead()
-							p.PadTo(initialLength)
+							p.(*InitialPacket).PadTo(initialLength)
 							initialSent = true
 						}
 						conn.DoSendPacket(p, eL)
