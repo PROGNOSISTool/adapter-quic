@@ -78,7 +78,7 @@ func NewAbstractSymbol(packetType qt.PacketType, headerOptions HeaderOptions, fr
 }
 
 func NewAbstractSymbolFromString(message string) AbstractSymbol {
-	messageStringRegex := regexp.MustCompile(`^([A-Z]+)(\(([0-9a-zx]+)\))?\[([A-Z,]+)\]$`)
+	messageStringRegex := regexp.MustCompile(`^([A-Z]+)(\(([0-9A-Za-zx,?]+)\))?\[([A-Z,]+)\]$`)
 	subgroups := messageStringRegex.FindStringSubmatch(message)
 	// The GetPacketType is the second group, we can get the type with a map.
 	packetType := stringToPacketType[subgroups[1]]
