@@ -90,7 +90,7 @@ func NewAbstractSymbolFromString(message string) AbstractSymbol {
 		// We anticipate there might be more, so we split the string.
 		headerOptionSlice := strings.Split(subgroups[3], ",")
 		// The first option is the Packet Number.
-		parsedPacketNumber, err := strconv.ParseUint(headerOptionSlice[0][2:], 10, 64)
+		parsedPacketNumber, err := strconv.ParseUint(headerOptionSlice[0], 10, 64)
 		if err == nil {
 			packetNumber := qt.PacketNumber(parsedPacketNumber)
 			headerOptions.PacketNumber = &packetNumber
