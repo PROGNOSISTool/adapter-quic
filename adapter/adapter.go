@@ -28,6 +28,7 @@ type Adapter struct {
 	outgoingSulPackets     chan interface{}
 	outgoingPacket         *ConcreteSymbol
 	incomingPacketSet      ConcreteSet
+	incomingRequest        AbstractSymbol
 	outgoingResponse       AbstractSet
 	oracleTable            AbstractConcreteMap
 }
@@ -145,7 +146,7 @@ func (a *Adapter) Run() {
 				}
 			}
 			a.Logger.Printf("Submitting request: %v", as.String())
-			a.connection.PreparePacket.Submit(encLevel)
+			a.connection.PreparePacket.Submit(qt.PacketToPrepare{encLevel, as.HeaderOptions.PacketNumber})
 		case o := <-a.incomingSulPackets:
 			var packetType qt.PacketType
 			version := &a.connection.Version
@@ -179,10 +180,17 @@ func (a *Adapter) Run() {
 				panic(fmt.Sprintf("Error: Packet '%T' not implemented!", packet))
 			}
 
-			a.incomingPacketSet.Add(NewConcreteSymbol(o.(qt.Packet)))
+			concreteSymbol := NewConcreteSymbol(o.(qt.Packet))
+			a.incomingPacketSet.Add(concreteSymbol)
+			packetNumber := concreteSymbol.GetHeader().GetPacketNumber()
+			packetNumberPointer := &packetNumber
+			if a.incomingRequest.HeaderOptions.PacketNumber == nil {
+				packetNumberPointer = nil
+			}
+
 			abstractSymbol := NewAbstractSymbol(
 				packetType,
-				HeaderOptions{QUICVersion: version},
+				HeaderOptions{QUICVersion: version, PacketNumber: packetNumberPointer},
 				frameTypes)
 			a.Logger.Printf("Got response: %v", abstractSymbol.String())
 			a.outgoingResponse.Add(abstractSymbol)
@@ -285,15 +293,15 @@ func (a *Adapter) handleNewAbstractQuery(client *tcp.Client, query []string) {
 		a.outgoingResponse = *NewAbstractSet()
 		a.incomingPacketSet = *NewConcreteSet()
 		a.outgoingPacket = nil
-		abstractSymbol := NewAbstractSymbolFromString(message)
-		abstractInputs = append(abstractInputs, abstractSymbol)
+		a.incomingRequest = NewAbstractSymbolFromString(message)
+		abstractInputs = append(abstractInputs, a.incomingRequest)
 
 		// If we don't have the requested encryption level, skip and return EMPTY.
-		if a.connection.CryptoState(qt.PacketTypeToEncryptionLevel[abstractSymbol.PacketType]) != nil {
-			a.incomingLearnerSymbols.Submit(abstractSymbol)
+		if a.connection.CryptoState(qt.PacketTypeToEncryptionLevel[a.incomingRequest.PacketType]) != nil {
+			a.incomingLearnerSymbols.Submit(a.incomingRequest)
 			time.Sleep(a.waitTime)
 		} else {
-			a.Logger.Printf("Unable to send packet at " + qt.PacketTypeToEncryptionLevel[abstractSymbol.PacketType].String() + " EL.")
+			a.Logger.Printf("Unable to send packet at " + qt.PacketTypeToEncryptionLevel[a.incomingRequest.PacketType].String() + " EL.")
 		}
 
 		abstractOutputs = append(abstractOutputs, a.outgoingResponse)

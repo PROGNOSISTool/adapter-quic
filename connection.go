@@ -48,7 +48,7 @@ type Connection struct {
 	FrameQueue          Broadcaster //type: QueuedFrame
 	TransportParameters Broadcaster //type: QuicTransportParameters
 
-	PreparePacket 			  Broadcaster //type: EncryptionLevel
+	PreparePacket 			  Broadcaster //type: PacketToPrepare
 	SendPacket 			      Broadcaster //type: PacketToSend
 	StreamInput               Broadcaster //type: StreamInput
 	PacketAcknowledged        Broadcaster //type: PacketAcknowledged

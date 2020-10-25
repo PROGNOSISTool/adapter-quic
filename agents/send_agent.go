@@ -51,7 +51,9 @@ func (a *SendingAgent) Run(conn *Connection) {
 
 	initialSent := false
 
-	fillPacket := func(packet Framer, level EncryptionLevel) Framer {
+	fillPacket := func(packet Framer, prepare PacketToPrepare) Framer {
+		pn := prepare.PacketNumber
+		level := prepare.EncryptionLevel
 		spaceLeft := int(a.MTU) - packet.GetHeader().HeaderLength() - conn.CryptoState(level).Write.Overhead()
 
 		a.FrameProducerLock.Lock()
@@ -88,6 +90,14 @@ func (a *SendingAgent) Run(conn *Connection) {
 			conn.PacketNumberLock.Unlock()
 			return nil
 		}
+
+		if pn != nil {
+			packet.GetHeader().SetPacketNumber(*pn)
+			conn.PacketNumberLock.Lock()
+			conn.PacketNumber[packet.PNSpace()]-- // Avoids PN skipping
+			conn.PacketNumberLock.Unlock()
+		}
+
 		return packet
 	}
 
@@ -95,9 +105,11 @@ func (a *SendingAgent) Run(conn *Connection) {
 		defer a.Logger.Println("Agent terminated")
 		defer close(a.closed)
 		for {
+			prepare := PacketToPrepare{}
 			select {
 			case i := <-preparePacket:
-				eL := i.(EncryptionLevel)
+				prepare = i.(PacketToPrepare)
+				eL := prepare.EncryptionLevel
 
 				if eL == EncryptionLevelBest || eL == EncryptionLevelBestAppData {
 					nEL := chooseBestEncryptionLevel(encryptionLevels, eL == EncryptionLevelBestAppData)
@@ -110,7 +122,7 @@ func (a *SendingAgent) Run(conn *Connection) {
 					timersArmed[eL] = true
 				}
 			case <-timers[EncryptionLevelInitial].C:
-				p := fillPacket(NewInitialPacket(conn), EncryptionLevelInitial)
+				p := fillPacket(NewInitialPacket(conn), prepare)
 				if p != nil {
 					var initialLength int
 					if conn.UseIPv6 {
@@ -126,20 +138,20 @@ func (a *SendingAgent) Run(conn *Connection) {
 				timersArmed[EncryptionLevelInitial] = false
 			case <-timers[EncryptionLevel0RTT].C:
 				if initialSent {
-					p := fillPacket(NewZeroRTTProtectedPacket(conn), EncryptionLevel0RTT)
+					p := fillPacket(NewZeroRTTProtectedPacket(conn), prepare)
 					if p != nil {
 						conn.DoSendPacket(p, EncryptionLevel0RTT)
 					}
 				}
 				timersArmed[EncryptionLevel0RTT] = false
 			case <-timers[EncryptionLevelHandshake].C:
-				p := fillPacket(NewHandshakePacket(conn), EncryptionLevelHandshake)
+				p := fillPacket(NewHandshakePacket(conn), prepare)
 				if p != nil {
 					conn.DoSendPacket(p, EncryptionLevelHandshake)
 				}
 				timersArmed[EncryptionLevelHandshake] = false
 			case <-timers[EncryptionLevel1RTT].C:
-				p := fillPacket(NewProtectedPacket(conn), EncryptionLevel1RTT)
+				p := fillPacket(NewProtectedPacket(conn), prepare)
 				if p != nil {
 					conn.DoSendPacket(p, EncryptionLevel1RTT)
 				}
@@ -170,7 +182,7 @@ func (a *SendingAgent) Run(conn *Connection) {
 					if !a.DontCoalesceZeroRTT && bestEncryptionLevels[EncryptionLevelBestAppData] == EncryptionLevel0RTT {
 						// Try to prepare a 0-RTT packet and squeeze it after the Initial
 						zp := NewZeroRTTProtectedPacket(conn)
-						fillPacket(zp, EncryptionLevel0RTT)
+						fillPacket(zp, PacketToPrepare{EncryptionLevel0RTT, nil})
 						if len(zp.GetFrames()) > 0 {
 							zpBytes := conn.EncodeAndEncrypt(zp, EncryptionLevel0RTT)
 							initialFrames := initial.GetFrames()

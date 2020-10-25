@@ -286,6 +286,11 @@ type PacketToSend struct {
 	EncryptionLevel
 }
 
+type PacketToPrepare struct {
+	EncryptionLevel
+	*PacketNumber
+}
+
 type FrameRequest struct {
 	FrameType
 	EncryptionLevel

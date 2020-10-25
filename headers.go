@@ -41,6 +41,7 @@ type Header interface {
 	GetPacketType() PacketType
 	DestinationConnectionID() ConnectionID
 	GetPacketNumber() PacketNumber
+	SetPacketNumber(number PacketNumber)
 	GetTruncatedPN() TruncatedPN
 	EncryptionLevel() EncryptionLevel
 	Encode() []byte
@@ -95,6 +96,7 @@ func (h *LongHeader) Encode() []byte {
 func (h *LongHeader) GetPacketType() PacketType             { return h.PacketType }
 func (h *LongHeader) DestinationConnectionID() ConnectionID { return h.DestinationCID }
 func (h *LongHeader) GetPacketNumber() PacketNumber { return h.PacketNumber }
+func (h *LongHeader) SetPacketNumber(number PacketNumber) { h.PacketNumber = number }
 func (h *LongHeader) GetTruncatedPN() TruncatedPN   { return h.TruncatedPN }
 func (h *LongHeader) EncryptionLevel() EncryptionLevel { return PacketTypeToEncryptionLevel[h.GetPacketType()] }
 func (h *LongHeader) HeaderLength() int {
@@ -187,6 +189,7 @@ func (h *ShortHeader) Encode() []byte {
 func (h *ShortHeader) GetPacketType() PacketType             { return ShortHeaderPacket }
 func (h *ShortHeader) DestinationConnectionID() ConnectionID { return h.DestinationCID }
 func (h *ShortHeader) GetPacketNumber() PacketNumber { return h.PacketNumber }
+func (h *ShortHeader) SetPacketNumber(number PacketNumber) { h.PacketNumber = number }
 func (h *ShortHeader) GetTruncatedPN() TruncatedPN   { return h.TruncatedPN }
 func (h *ShortHeader) EncryptionLevel() EncryptionLevel      { return PacketTypeToEncryptionLevel[h.GetPacketType()] }
 func (h *ShortHeader) HeaderLength() int                     { return 1 + len(h.DestinationCID) + h.TruncatedPN.Length }

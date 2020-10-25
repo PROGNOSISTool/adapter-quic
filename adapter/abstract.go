@@ -31,20 +31,25 @@ var stringToPacketType = map[string]qt.PacketType {
 }
 
 type HeaderOptions struct {
+	PacketNumber *qt.PacketNumber
 	QUICVersion *uint32
 }
 
 func (ho *HeaderOptions) String() string {
-	version := ""
+	version := "?"
 	if ho.QUICVersion != nil {
 		version = fmt.Sprintf("%#x", qt.Uint32ToBEBytes(*ho.QUICVersion))
 	}
-	return version
+	packetNumber := "?"
+	if ho.PacketNumber != nil {
+		version = fmt.Sprintf("%#d", *ho.PacketNumber)
+	}
+	return fmt.Sprintf("%#v,%#v", packetNumber, version)
 }
-// INITIAL(0xff00001d)[ACK,CRYPTO]
+// INITIAL(25,0xff00001d)[ACK,CRYPTO]
 // Is represented as:
 // PacketType: Initial
-// HeaderOptions: HeaderOptions{ QUICVersion: 0xff00001d }
+// HeaderOptions: HeaderOptions{ PacketNumber: 25, QUICVersion: 0xff00001d }
 // frames: [ qt.AckFrame, qt.CryptoFrame ]
 type AbstractSymbol struct {
 	PacketType    qt.PacketType
@@ -84,8 +89,14 @@ func NewAbstractSymbolFromString(message string) AbstractSymbol {
 	if subgroups[3] != "" {
 		// We anticipate there might be more, so we split the string.
 		headerOptionSlice := strings.Split(subgroups[3], ",")
-		// The first option is the QUIC version.
-		parsedVersion, err := strconv.ParseUint(headerOptionSlice[0][2:], 16, 32)
+		// The first option is the Packet Number.
+		parsedPacketNumber, err := strconv.ParseUint(headerOptionSlice[0][2:], 10, 64)
+		if err == nil {
+			packetNumber := qt.PacketNumber(parsedPacketNumber)
+			headerOptions.PacketNumber = &packetNumber
+		}
+		// The second option is the QUIC Version.
+		parsedVersion, err := strconv.ParseUint(headerOptionSlice[1][2:], 16, 32)
 		if err == nil {
 			version32 := uint32(parsedVersion)
 			headerOptions.QUICVersion = &version32
