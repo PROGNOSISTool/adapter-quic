@@ -134,8 +134,6 @@ func (a *Adapter) Run() {
 						} else {
 							a.agents.Get("HTTP09Agent").(*agents.HTTP09Agent).SendRequest("/index.html", "GET", a.connection.Host.String(), nil)
 						}
-                        // FIXME: This ensures the request gets queued before packets are sent. I'm not proud of it but it works.
-                        time.Sleep(1 * time.Millisecond)
 					}
 					a.agents.Get("StreamAgent").(*agents.StreamAgent).SendFromQueue <- qt.FrameRequest{qt.StreamType, encLevel}
 				case qt.MaxDataType:
@@ -145,6 +143,8 @@ func (a *Adapter) Run() {
 					panic(fmt.Sprintf("Error: Frame Type '%v' not implemented!", frameType))
 				}
 			}
+			// FIXME: This ensures the request gets queued before packets are sent. I'm not proud of it but it works.
+			time.Sleep(5 * time.Millisecond)
 			a.Logger.Printf("Submitting request: %v", as.String())
 			a.connection.PreparePacket.Submit(qt.PacketToPrepare{encLevel, as.HeaderOptions.PacketNumber})
 		case o := <-a.incomingSulPackets:
