@@ -522,7 +522,7 @@ func (frame *StreamFrame) FrameLength() uint16 {
 func (frame StreamFrame) MarshalJSON() ([]byte, error) {
     type localFrame StreamFrame
 	envelope := Envelope{
-		Type: NewTokenFrameJSON,
+		Type: StreamFrameJSON,
 		Message: localFrame(frame),
 	}
 	return json.Marshal(envelope)
