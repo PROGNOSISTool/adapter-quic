@@ -3,7 +3,6 @@ package agents
 import (
 	. "github.com/tiferrei/quic-tracker"
 	"sync"
-	"time"
 )
 
 // The SendingAgent is responsible of bundling frames for sending from other agents into packets. If the frames queued
@@ -35,18 +34,6 @@ func (a *SendingAgent) Run(conn *Connection) {
 	}
 	bestEncryptionLevels := map[EncryptionLevel]EncryptionLevel{
 		EncryptionLevelBest: EncryptionLevelInitial,
-	}
-	timers := make(map[EncryptionLevel]*time.Timer)
-	timersArmed := make(map[EncryptionLevel]bool)
-	for dEL := range encryptionLevels {
-		el := dEL.EncryptionLevel
-		if dEL.EncryptionLevel != EncryptionLevelNone {
-			timers[el] = time.NewTimer(0)
-			timersArmed[el] = false
-			if !timers[el].Stop() {
-				<-timers[el].C
-			}
-		}
 	}
 
 	initialSent := false
@@ -105,10 +92,9 @@ func (a *SendingAgent) Run(conn *Connection) {
 		defer a.Logger.Println("Agent terminated")
 		defer close(a.closed)
 		for {
-			prepare := PacketToPrepare{}
 			select {
 			case i := <-preparePacket:
-				prepare = i.(PacketToPrepare)
+				prepare := i.(PacketToPrepare)
 				eL := prepare.EncryptionLevel
 
 				if eL == EncryptionLevelBest || eL == EncryptionLevelBestAppData {
@@ -117,63 +103,38 @@ func (a *SendingAgent) Run(conn *Connection) {
 					a.Logger.Printf("Chose %s as new encryption level for %s\n", nEL, eL)
 					eL = nEL
 				}
-				if encryptionLevels[DirectionalEncryptionLevel{EncryptionLevel: eL, Read: false, Available: true}] && !timersArmed[eL] {
-					timers[eL].Reset(2 * time.Millisecond)
-					timersArmed[eL] = true
-				}
-			case <-timers[EncryptionLevelInitial].C:
-				p := fillPacket(NewInitialPacket(conn), prepare)
-				if p != nil {
-					var initialLength int
-					if conn.UseIPv6 {
-						initialLength = MinimumInitialLengthv6
-					} else {
-						initialLength = MinimumInitialLength
-					}
-					initialLength -= conn.CryptoState(EncryptionLevelInitial).Write.Overhead()
-					p.PadTo(initialLength)
-					initialSent = true
-					conn.DoSendPacket(p, EncryptionLevelInitial)
-				}
-				timersArmed[EncryptionLevelInitial] = false
-			case <-timers[EncryptionLevel0RTT].C:
-				if initialSent {
-					p := fillPacket(NewZeroRTTProtectedPacket(conn), prepare)
+				if encryptionLevels[DirectionalEncryptionLevel{EncryptionLevel: eL, Read: false, Available: true}]  {
+					p := fillPacket(NewInitialPacket(conn), prepare)
 					if p != nil {
-						conn.DoSendPacket(p, EncryptionLevel0RTT)
+						if eL == EncryptionLevelInitial {
+							var initialLength int
+							if conn.UseIPv6 {
+								initialLength = MinimumInitialLengthv6
+							} else {
+								initialLength = MinimumInitialLength
+							}
+							initialLength -= conn.CryptoState(EncryptionLevelInitial).Write.Overhead()
+							p.PadTo(initialLength)
+							initialSent = true
+						}
+						conn.DoSendPacket(p, eL)
 					}
 				}
-				timersArmed[EncryptionLevel0RTT] = false
-			case <-timers[EncryptionLevelHandshake].C:
-				p := fillPacket(NewHandshakePacket(conn), prepare)
-				if p != nil {
-					conn.DoSendPacket(p, EncryptionLevelHandshake)
-				}
-				timersArmed[EncryptionLevelHandshake] = false
-			case <-timers[EncryptionLevel1RTT].C:
-				p := fillPacket(NewProtectedPacket(conn), prepare)
-				if p != nil {
-					conn.DoSendPacket(p, EncryptionLevel1RTT)
-				}
-				timersArmed[EncryptionLevel1RTT] = false
 			case i := <-elChan:
 				dEL := i.(DirectionalEncryptionLevel)
 				if dEL.Read {
 					continue
 				}
 				eL := dEL.EncryptionLevel
-				t := timers[eL]
 				if !dEL.Available && !a.KeepDroppedEncryptionLevels {
 					a.Logger.Println("Dropping encryption level", eL.String())
 					encryptionLevels[dEL] = true
-					t.Stop()
 				} else if dEL.Available {
 					encryptionLevels[dEL] = true
 					dEL.Available = false
 					delete(encryptionLevels, dEL)
 					bestEncryptionLevels[EncryptionLevelBest] = chooseBestEncryptionLevel(encryptionLevels, false)
 					bestEncryptionLevels[EncryptionLevelBestAppData] = chooseBestEncryptionLevel(encryptionLevels, true)
-					t.Reset(2 * time.Millisecond)
 				}
 			case i := <-sendPacket:
 				p := i.(PacketToSend)
