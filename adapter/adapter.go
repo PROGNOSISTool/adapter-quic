@@ -147,7 +147,7 @@ func (a *Adapter) Run() {
 					a.agents.Get("StreamAgent").(*agents.StreamAgent).SendFromQueue <- qt.FrameRequest{qt.StreamType, encLevel}
 				case qt.MaxDataType:
 				case qt.MaxStreamDataType:
-					a.agents.Get("FlowControlAgent").(*agents.FlowControlAgent).SendFromQueue <- qt.FrameRequest{qt.MaxStreamDataType, encLevel}
+					a.agents.Get("FlowControlAgent").(*agents.FlowControlAgent).SendFromQueue <- qt.FrameRequest{frameType, encLevel}
 				default:
 					panic(fmt.Sprintf("Error: Frame Type '%v' not implemented!", frameType))
 				}
