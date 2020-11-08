@@ -293,9 +293,9 @@ func (a *FlowControlAgent) Run(conn *Connection) { // TODO: Report violation of 
 					a.Logger.Printf("INFO: Flow Control Queue empty, sending new %v frame at %v enc level", fr.FrameType.String(), fr.EncryptionLevel.String())
 					switch fr.FrameType {
 					case MaxDataType:
-						conn.FrameQueue.Submit(MaxDataFrame{a.LocalFC.MaxData})
+						conn.FrameQueue.Submit(QueuedFrame{&MaxDataFrame{a.LocalFC.MaxData}, fr.EncryptionLevel})
 					case MaxStreamDataType:
-						conn.FrameQueue.Submit(MaxStreamDataFrame{0, a.LocalFC.MaxStreamDataBidiLocal})
+						conn.FrameQueue.Submit(QueuedFrame{&MaxStreamDataFrame{0, a.LocalFC.MaxStreamDataBidiLocal}, fr.EncryptionLevel})
 					}
 				}
 			case <-a.close:
