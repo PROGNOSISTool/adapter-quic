@@ -39,6 +39,7 @@ type Connection struct {
 
 	CryptoStreams       CryptoStreams  // TODO: It should be a parent class without closing states
 	Streams             Streams
+	CurrentStreamID     uint64
 
 	IncomingPackets     Broadcaster //type: Packet
 	OutgoingPackets     Broadcaster //type: Packet

@@ -49,7 +49,6 @@ type HTTP3Agent struct {
 	responseBuffer       map[uint64]*HTTP3Response
 	controlStreamID      uint64
 	peerControlStreamID  uint64
-	nextRequestStream    uint64
 }
 
 const (
@@ -243,7 +242,7 @@ func (a *HTTP3Agent) SendRequest(path, method, authority string, headers map[str
 		hdrs = append(hdrs, HTTPHeader{k, v})
 	}
 
-	streamID := a.nextRequestStream
+	streamID := a.conn.CurrentStreamID
 	stream := a.conn.Streams.Get(streamID)
 	streamChan := stream.ReadChan.RegisterNewChan(1000)
 	a.streamDataBuffer[streamID] = new(bytes.Buffer)
@@ -273,7 +272,7 @@ func (a *HTTP3Agent) SendRequest(path, method, authority string, headers map[str
 	}()
 
 	a.QPACK.EncodeHeaders <- DecodedHeaders{streamID, hdrs}
-	a.nextRequestStream += 4
+	a.conn.CurrentStreamID += 4
 	return response.responseChan
 }
 

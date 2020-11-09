@@ -28,7 +28,6 @@ func (r *HTTP09Response) Body() []byte          { return r.body }
 type HTTP09Agent struct {
 	BaseAgent
 	conn                 *Connection
-	nextRequestStream    uint64
 	httpResponseReceived Broadcaster
 }
 
@@ -45,9 +44,9 @@ func (a *HTTP09Agent) Run(conn *Connection) {
 }
 
 func (a *HTTP09Agent) SendRequest(path, method, authority string, headers map[string]string) chan HTTPResponse {
-	streamID := a.nextRequestStream
+	streamID :=  a.conn.CurrentStreamID
 	a.conn.SendHTTP09GETRequest(path, streamID)
-	responseStream := a.conn.Streams.Get(a.nextRequestStream).ReadChan.RegisterNewChan(1000)
+	responseStream := a.conn.Streams.Get(a.conn.CurrentStreamID).ReadChan.RegisterNewChan(1000)
 	responseChan := make(chan HTTPResponse, 1)
 
 	go func() {
@@ -61,7 +60,7 @@ func (a *HTTP09Agent) SendRequest(path, method, authority string, headers map[st
 		a.httpResponseReceived.Submit(response)
 	}()
 
-	a.nextRequestStream += 4
+	a.conn.CurrentStreamID += 4
 	return responseChan
 }
 
