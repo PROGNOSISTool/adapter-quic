@@ -243,6 +243,9 @@ func (a *Adapter) Reset(client *tcp.Client) {
 	a.outgoingPacket = nil
 	a.incomingPacketSet = *NewConcreteSet()
 	a.outgoingResponse = *NewAbstractSet()
+
+	a.connection.TLSTPHandler.MaxStreamDataBidiLocal = 80
+
 	a.agents = agents.AttachAgentsToConnection(a.connection, agents.GetBasicAgents()...)
 	a.agents.Get("ClosingAgent").(*agents.ClosingAgent).WaitForFirstPacket = true
 	a.agents.Add(&agents.HandshakeAgent{
@@ -261,6 +264,7 @@ func (a *Adapter) Reset(client *tcp.Client) {
 		a.agents.Add(&agents.HTTP09Agent{})
 	}
 	a.agents.Get("SendingAgent").(*agents.SendingAgent).KeepDroppedEncryptionLevels = true
+	a.agents.Get("FlowControlAgent").(*agents.FlowControlAgent).DontSlideCreditWindow = true
 	a.agents.Get("FlowControlAgent").(*agents.FlowControlAgent).DisableFrameSending = true
 	a.agents.Get("TLSAgent").(*agents.TLSAgent).DisableFrameSending = true
 	a.agents.Get("AckAgent").(*agents.AckAgent).DisableAcks = map[qt.PNSpace]bool {
