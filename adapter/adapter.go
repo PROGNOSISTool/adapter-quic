@@ -67,6 +67,8 @@ func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 
 	adapter.outgoingResponse = *NewAbstractSet()
 	adapter.oracleTable = *NewAbstractConcreteMap()
 
+	adapter.connection.TLSTPHandler.MaxStreamDataBidiLocal = 80
+
 	adapter.agents = agents.AttachAgentsToConnection(adapter.connection, agents.GetBasicAgents()...)
 	adapter.agents.Get("ClosingAgent").(*agents.ClosingAgent).WaitForFirstPacket = true
 	adapter.agents.Add(&agents.HandshakeAgent{
@@ -86,6 +88,7 @@ func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 
 	}
 	adapter.agents.Get("SendingAgent").(*agents.SendingAgent).KeepDroppedEncryptionLevels = true
 	adapter.agents.Get("FlowControlAgent").(*agents.FlowControlAgent).DisableFrameSending = true
+	adapter.agents.Get("FlowControlAgent").(*agents.FlowControlAgent).DontSlideCreditWindow = true
 	adapter.agents.Get("TLSAgent").(*agents.TLSAgent).DisableFrameSending = true
 	adapter.agents.Get("AckAgent").(*agents.AckAgent).DisableAcks = map[qt.PNSpace]bool {
 		qt.PNSpaceNoSpace: true,
