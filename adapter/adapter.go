@@ -17,6 +17,7 @@ type Adapter struct {
 	connection             *qt.Connection
 	trace                  *qt.Trace
 	http3                  bool
+	httpPath               string
 	waitTime               time.Duration
 	agents                 *agents.ConnectionAgents
 	server                 *tcp.Server
@@ -33,7 +34,7 @@ type Adapter struct {
 	oracleTable            AbstractConcreteMap
 }
 
-func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 bool, tracing bool, waitTime time.Duration) (*Adapter, error) {
+func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 bool, httpPath string, tracing bool, waitTime time.Duration) (*Adapter, error) {
 	adapter := new(Adapter)
 
 	adapter.Logger = log.New(os.Stderr, "[ADAPTER] ", log.Lshortfile)
@@ -41,10 +42,12 @@ func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 
 	adapter.Logger.Printf("SUL Address: %v", sulAddress)
 	adapter.Logger.Printf("SUL Name: %v", sulName)
 	adapter.Logger.Printf("HTTP3: %v", http3)
+	adapter.Logger.Printf("HTTP Path: %v", httpPath)
 	adapter.Logger.Printf("TRACING: %v", tracing)
 	adapter.Logger.Printf("Wait Time: %v", waitTime)
 
 	adapter.incomingLearnerSymbols = qt.NewBroadcaster(1000)
+	adapter.httpPath = httpPath
 	adapter.http3 = http3
 	adapter.waitTime = waitTime
 	adapter.stop = make(chan bool, 1)
@@ -141,9 +144,9 @@ func (a *Adapter) Run() {
 				case qt.StreamType:
 					if len(a.connection.StreamQueue[qt.FrameRequest{FrameType: qt.StreamType, EncryptionLevel: qt.EncryptionLevel1RTT}]) == 0 {
 						if a.http3 {
-							a.agents.Get("HTTP3Agent").(*agents.HTTP3Agent).SendRequest("/index.html", "GET", a.connection.Host.String(), nil)
+							a.agents.Get("HTTP3Agent").(*agents.HTTP3Agent).SendRequest(a.httpPath, "GET", a.connection.Host.String(), nil)
 						} else {
-							a.agents.Get("HTTP09Agent").(*agents.HTTP09Agent).SendRequest("/index.html", "GET", a.connection.Host.String(), nil)
+							a.agents.Get("HTTP09Agent").(*agents.HTTP09Agent).SendRequest(a.httpPath, "GET", a.connection.Host.String(), nil)
 						}
 					}
 					time.Sleep(1 * time.Millisecond)
