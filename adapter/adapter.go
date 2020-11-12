@@ -154,6 +154,8 @@ func (a *Adapter) Run() {
 				case qt.MaxDataType:
 				case qt.MaxStreamDataType:
 					a.agents.Get("FlowControlAgent").(*agents.FlowControlAgent).SendFromQueue <- qt.FrameRequest{frameType, encLevel}
+				case qt.HandshakeDoneType:
+					a.connection.FrameQueue.Submit(qt.QueuedFrame{Frame: new(qt.HandshakeDoneFrame), EncryptionLevel: encLevel})
 				default:
 					panic(fmt.Sprintf("Error: Frame Type '%v' not implemented!", frameType))
 				}
