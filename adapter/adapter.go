@@ -382,10 +382,6 @@ func (a *Adapter) SaveTrace(filename string) {
 }
 
 func (a *Adapter) SaveOracleTable(filename string) {
-	for key := range a.oracleTable {
-		fmt.Printf("[DEBUG]: %v\n", key)
-	}
-
 	writeJson(filename, a.oracleTable)
 	_ = RunJSONCLI()
 }

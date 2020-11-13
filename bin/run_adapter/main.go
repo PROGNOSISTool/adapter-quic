@@ -46,7 +46,12 @@ func main() {
 	}
 
 	SetupCloseHandler(sulAdapter)
-	defer sulAdapter.Stop()
+	defer func() {
+		if err := recover(); err != nil {
+			sulAdapter.Stop()
+			os.Exit(1)
+		}
+	}()
 
 	sulAdapter.Run()
 }
