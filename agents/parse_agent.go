@@ -112,7 +112,14 @@ func (a *ParsingAgent) Run(conn *Connection) {
 
 						consumed = hLen + pLen
 					case ShortHeaderPacket: // Packets with a short header always include a 1-RTT protected payload.
-						payload := cryptoState.Read.Decrypt(ciphertext[hLen:], uint64(header.GetPacketNumber()), ciphertext[:hLen])
+					    payload := []byte{}
+					    if len(ciphertext) > hLen {
+                            payload = cryptoState.Read.Decrypt(ciphertext[hLen:], uint64(header.GetPacketNumber()), ciphertext[:hLen])
+                        } else {
+                            a.Logger.Printf("[DEBUG] Warning! short header with potentially no payload.")
+                            payload = cryptoState.Read.Decrypt([]byte{}, uint64(header.GetPacketNumber()), ciphertext)
+                        }
+
 						if payload == nil {
 							a.Logger.Printf("Could not decrypt packet {type=%s, number=%d}\n", header.GetPacketType().String(), header.GetPacketNumber())
 							statelessResetToken := ciphertext[len(ciphertext)-16:]
