@@ -48,7 +48,7 @@ func main() {
 	SetupCloseHandler(sulAdapter)
 	defer func() {
 		if err := recover(); err != nil {
-		    fmt.Printf("Panic detected: %v", err)
+		    sulAdapter.Logger.Printf("Panic detected: %v", err)
 			sulAdapter.Stop()
 			os.Exit(1)
 		}
