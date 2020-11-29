@@ -12,6 +12,7 @@ import (
 
 type ConcreteSymbol struct {
 	qt.Packet
+	*qt.AbstractPacket
 }
 
 func (cs *ConcreteSymbol) UnmarshalJSON(data []byte) error {
@@ -22,13 +23,21 @@ func (cs *ConcreteSymbol) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*cs = ConcreteSymbol{envelope.Message.(qt.Packet)}
+	*cs = ConcreteSymbol{envelope.Message.(qt.Packet), nil}
 	return nil
 }
 
+func NewConcreteSymbol(packet interface{}) ConcreteSymbol {
+    var cs ConcreteSymbol
+    switch p := packet.(type) {
+    case qt.Packet:
+        cs = ConcreteSymbol{p, nil}
+    case qt.AbstractPacket:
+        cs = ConcreteSymbol{nil, &p}
+    default:
+        cs = ConcreteSymbol{nil, nil}
+    }
 
-func NewConcreteSymbol(packet qt.Packet) ConcreteSymbol {
-	cs := ConcreteSymbol{packet}
 	return cs
 }
 

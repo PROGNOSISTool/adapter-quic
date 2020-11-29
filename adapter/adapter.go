@@ -199,10 +199,14 @@ func (a *Adapter) Run() {
 
 			concreteSymbol := NewConcreteSymbol(o.(qt.Packet))
 			a.incomingPacketSet.Add(concreteSymbol)
-			packetNumber := concreteSymbol.GetHeader().GetPacketNumber()
-			packetNumberPointer := &packetNumber
+			var packetNumber *qt.PacketNumber = nil
+			if concreteSymbol.Packet.GetHeader() != nil {
+			    pn := concreteSymbol.Packet.GetHeader().GetPacketNumber()
+                packetNumber = &pn
+            }
+
 			if a.incomingRequest.HeaderOptions.PacketNumber == nil {
-				packetNumberPointer = nil
+				packetNumber = nil
 			}
 
 			if a.incomingRequest.HeaderOptions.QUICVersion == nil {
@@ -211,7 +215,7 @@ func (a *Adapter) Run() {
 
 			abstractSymbol := NewAbstractSymbol(
 				packetType,
-				HeaderOptions{QUICVersion: version, PacketNumber: packetNumberPointer},
+				HeaderOptions{QUICVersion: version, PacketNumber: packetNumber},
 				frameTypes)
 			a.Logger.Printf("Got response: %v", abstractSymbol.String())
 			a.outgoingResponse.Add(abstractSymbol)
