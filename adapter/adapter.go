@@ -144,9 +144,9 @@ func (a *Adapter) Run() {
 				case qt.StreamType:
 					if len(a.connection.StreamQueue[qt.FrameRequest{FrameType: qt.StreamType, EncryptionLevel: qt.EncryptionLevel1RTT}]) == 0 {
 						if a.http3 {
-							a.agents.Get("HTTP3Agent").(*agents.HTTP3Agent).SendRequest(a.httpPath, "GET", "https://quic.tiferrei.com/", nil)
+							a.agents.Get("HTTP3Agent").(*agents.HTTP3Agent).SendRequest(a.httpPath, "GET", "quic.tiferrei.com", nil)
 						} else {
-							a.agents.Get("HTTP09Agent").(*agents.HTTP09Agent).SendRequest(a.httpPath, "GET", "https://quic.tiferrei.com/", nil)
+							a.agents.Get("HTTP09Agent").(*agents.HTTP09Agent).SendRequest(a.httpPath, "GET", "quic.tiferrei.com", nil)
 						}
 					}
 					time.Sleep(1 * time.Millisecond)
