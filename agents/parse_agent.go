@@ -173,6 +173,10 @@ func (a *ParsingAgent) filterOutRetransmits(framer Framer) Framer {
 	for initIndex := range framer.GetFrames() {
 		index := initIndex - deleted
 		frame := framer.GetFrames()[index]
+        if frame.FrameType() == StreamDataBlockedType || frame.FrameType() == StreamsBlockedType {
+            continue
+        }
+
 		if frame.FrameType() == PingType {
 			// TODO: My thought process was that for now we don't want to pass PINGs as they're time-dependent.
 			framer.RemoveAtIndex(index)
