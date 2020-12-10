@@ -9,13 +9,15 @@ import (
 	tcp "github.com/tiferrei/tcp_server"
 	"log"
 	"os"
-	"strings"
+    "os/exec"
+    "strings"
 	"time"
 )
 
 type Adapter struct {
 	connection             *qt.Connection
 	trace                  *qt.Trace
+	pcap                   *exec.Cmd
 	http3                  bool
 	httpPath               string
 	waitTime               time.Duration
@@ -55,8 +57,15 @@ func NewAdapter(adapterAddress string, sulAddress string, sulName string, http3 
 
 	adapter.connection, _ = qt.NewDefaultConnection(sulAddress, sulName, nil, false, "hq", adapter.http3)
 	if tracing {
+	    var err error
+        adapter.pcap, err = qt.StartPcapCapture(adapter.connection, "")
+        if err != nil {
+            panic(err)
+        }
+
 		adapter.trace = qt.NewTrace("Adapter", 1, sulAddress)
 		adapter.trace.AttachTo(adapter.connection)
+
 		adapter.trace.StartedAt = time.Now().Unix()
 		ip := strings.Replace(adapter.connection.ConnectedIp().String(), "[", "", -1)
 		adapter.trace.Ip = ip[:strings.LastIndex(ip, ":")]
@@ -371,6 +380,10 @@ func writeJson(filename string, object interface{}) {
 
 func (a *Adapter) SaveTrace(filename string) {
 	if a.trace != nil {
+        err := a.trace.AddPcap(a.connection, a.pcap)
+        if err != nil {
+            a.trace.Results["pcap_error"] = err.Error()
+        }
 		a.connection.QLog.Title = "QUIC Adapter Trace"
 		a.connection.QLogTrace.Sort()
 		a.trace.QLog = a.connection.QLog
