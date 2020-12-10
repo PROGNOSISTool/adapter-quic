@@ -387,6 +387,7 @@ func (a *Adapter) SaveTrace(filename string) {
 		a.connection.QLog.Title = "QUIC Adapter Trace"
 		a.connection.QLogTrace.Sort()
 		a.trace.QLog = a.connection.QLog
+		a.trace.Complete(a.connection)
 		outFile, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
 		if err == nil {
 			content, err := json.Marshal(a.trace)
