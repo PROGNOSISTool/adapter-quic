@@ -5,45 +5,24 @@ import (
 	"github.com/tiferrei/quic-tracker/adapter"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
-	"time"
 )
 
-
 func main() {
-	adapterAddress := readEnvWithFallback("ADAPTER_ADDRESS", "0.0.0.0:3333")
-	sulAddress := readEnvWithFallback("SUL_ADDRESS", "implementation:4433")
-	sulName := readEnvWithFallback("SUL_NAME", "quic.tiferrei.com")
-	http3 := readEnvWithFallback("HTTP3", "false")
-	httpPath := readEnvWithFallback("HTTP_PATH", "/index.html")
-	tracing := readEnvWithFallback("TRACING", "false")
-	waitTime := readEnvWithFallback("WAIT_TIME", "300ms")
+    config := adapter.GetConfig("config.yaml")
+    config.Print()
 
-
-	http3Bool, err := strconv.ParseBool(http3)
-	if err != nil {
-		fmt.Printf("Error: Invalid HTTP3 value, must be bool.")
-		return
-	}
-
-	tracingBool, err := strconv.ParseBool(tracing)
-	if err != nil {
-		fmt.Printf("Error: Invalid TRACING value, must be bool.")
-		return
-	}
-
-	waitTimeDuration, err := time.ParseDuration(waitTime)
-	if err != nil {
-		fmt.Printf("Error: Invalid WAIT_TIME value, must be a duration.")
-		return
-	}
-
-	sulAdapter, err := adapter.NewAdapter(adapterAddress, sulAddress, sulName, http3Bool, httpPath, tracingBool, waitTimeDuration)
-	if err != nil {
-		fmt.Printf("Failed to create Adapter: %v", err.Error())
-		return
-	}
+    sulAdapter, err := adapter.NewAdapter(
+        config.AdapterAddress,
+        config.SulAddress,
+        config.SulName,
+        config.HTTP3,
+        config.HttpPath,
+        config.Tracing,
+        config.WaitTime)
+    if err != nil {
+        fmt.Printf("Failed to create Adapter: %v", err.Error())
+    }
 
 	SetupCloseHandler(sulAdapter)
 	defer func() {
@@ -55,14 +34,6 @@ func main() {
 	}()
 
 	sulAdapter.Run()
-}
-
-func readEnvWithFallback(envName string, fallback string) string {
-	value, exists := os.LookupEnv(envName)
-	if !exists {
-		value = fallback
-	}
-	return value
 }
 
 func SetupCloseHandler(adapter *adapter.Adapter) {

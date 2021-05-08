@@ -1,11 +1,11 @@
 package quictracker
 
 import (
-	"os/exec"
-	"time"
-	"strings"
-	"unsafe"
-	"github.com/tiferrei/pigotls"
+    "github.com/tiferrei/pigotls"
+    "os/exec"
+    "strings"
+    "time"
+    "unsafe"
 )
 
 // Contains the result of a test run against a given host.
