@@ -10,7 +10,6 @@ import (
 
 func main() {
     config := adapter.GetConfig("config.yaml")
-    config.Print()
 
     sulAdapter, err := adapter.NewAdapter(
         config.AdapterAddress,
