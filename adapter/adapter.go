@@ -401,5 +401,16 @@ func (a *Adapter) SaveTrace(filename string) {
 
 func (a *Adapter) SaveOracleTable(filename string) {
 	writeJson(filename, a.oracleTable)
-	_ = RunJSONCLI()
+    fmt.Printf("Combining oracle tables with:.\n")
+    fmt.Printf("    find . -name 'oracleTable*' -exec jq -s add {} > oracleTable.json +;\n")
+    fmt.Printf("This operation can be very time consuming (15 min / GB to be combined).\n")
+    fmt.Printf("Exiting the program now and running it natively on your adapter results may be faster.\n")
+
+    cmd := "find . -name 'oracleTable*' -exec jq -s add {} > oracleTable.json +;"
+    _, err := exec.Command("sh","-c",cmd).Output()
+    if err != nil {
+        fmt.Printf(fmt.Sprintf("Failed to combine oracle tables: %v\n", err))
+    } else {
+        fmt.Printf("Finished combining oracle tables.\n")
+    }
 }
