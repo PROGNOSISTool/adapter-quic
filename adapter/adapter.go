@@ -402,7 +402,7 @@ func (a *Adapter) SaveTrace(filename string) {
 func (a *Adapter) SaveOracleTable(filename string) {
 	writeJson(filename, a.oracleTable)
     fmt.Printf("Combining oracle tables with:.\n")
-    fmt.Printf("    mv oracleTable.json oracleTable-$(date +%s).json || true && find . -name 'oracleTable*' -exec jq -s -c add {} > oracleTable.json +;\n")
+    fmt.Print("    mv oracleTable.json oracleTable-$(date +%s).json || true && find . -name 'oracleTable*' -exec jq -s -c add {} > oracleTable.json +;\n")
     fmt.Printf("This operation can be very time consuming (15 min / GB to be combined).\n")
     fmt.Printf("Exiting the program now and running it natively on your adapter results may be faster.\n")
 
