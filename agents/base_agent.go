@@ -131,10 +131,6 @@ func AttachAgentsToConnection(conn *Connection, agents ...Agent) *ConnectionAgen
 				}
 				//c.lock.Unlock()
 				conn.ConnectionRestart = make(chan bool, 1)
-				conn.UdpConnection.Close()
-				conn.UdpConnection, _ = EstablishUDPConnection(conn.Host, conn.UdpConnection.LocalAddr().(*net.UDPAddr))
-				conn.Logger.Printf("[DEBUG] New Local Address: %v", conn.UdpConnection.LocalAddr().String())
-				//c.lock.Lock()
 				for _, a := range agents {
 					a.Run(conn)
 				}

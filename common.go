@@ -26,7 +26,7 @@
 // QUIC-Tracker is licensed under the GNU Affero General Public License version 3. You can find its terms in the
 // LICENSE file, or at https://www.gnu.org/licenses/agpl.txt.
 //
-// Copyright (C) 2017-2020  Maxime Piraux
+// Copyright (C) 2017-2021  Maxime Piraux
 //
 package quictracker
 
@@ -52,7 +52,7 @@ const (
 	MinimumInitialLength       = 1252
 	MinimumInitialLengthv6     = 1232
 	MaxTheoreticUDPPayloadSize = 65507
-	MaximumVersion             = 0xff00001c
+	MaximumVersion             = 0xff00001d
 	MinimumVersion             = 0xff00001c
 )
 
