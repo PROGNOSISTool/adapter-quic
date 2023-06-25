@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 'main'
+      - 'develop'
 
 # permissions are needed if pushing to ghcr.io
 permissions:
