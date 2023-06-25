@@ -1,21 +1,19 @@
-//
 // This package contains pieces of behaviours that constitutes a QUIC client.
 //
 // Each agent is responsible for a limited part of the behaviour of a QUIC client. This allows modularity when defining
 // test scenarii with specific needs. Each agent is described in its type documentation. For more information on the
 // architecture of QUIC-Tracker, please consult the package quictracker documentation.
-//
 package agents
 
 import (
 	"encoding/hex"
 	"fmt"
-	. "github.com/tiferrei/quic-tracker"
 	"log"
-	"net"
 	"os"
 	"strings"
 	"time"
+
+	. "github.com/tiferrei/quic-tracker"
 )
 
 type Agent interface {
