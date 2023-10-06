@@ -13,7 +13,7 @@ RUN make
 WORKDIR /go/src/github.com/tiferrei/quic-tracker
 RUN go build -o /run_adapter bin/run_adapter/main.go
 
-FROM alpine as runtime
+FROM alpine:3.14 as runtime
 RUN apk add --no-cache jq tcpdump libpcap libpcap-dev
 COPY --from=build /run_adapter /usr/bin/run_adapter
 WORKDIR /root
