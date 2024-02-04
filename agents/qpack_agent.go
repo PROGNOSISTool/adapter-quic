@@ -5,7 +5,7 @@ import (
 	"math"
 
 	. "github.com/PROGNOSISTool/adapter-quic"
-	ls_qpack_go "github.com/mpiraux/ls-qpack-go"
+	ls_qpack_go "github.com/PROGNOSISTool/ls-qpack-go"
 )
 
 type HTTPHeader struct {

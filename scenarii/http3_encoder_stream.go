@@ -6,7 +6,7 @@ import (
 	qt "github.com/PROGNOSISTool/adapter-quic"
 	"github.com/PROGNOSISTool/adapter-quic/agents"
 	"github.com/PROGNOSISTool/adapter-quic/http3"
-	ls_qpack_go "github.com/mpiraux/ls-qpack-go"
+	ls_qpack_go "github.com/PROGNOSISTool/ls-qpack-go"
 )
 
 const (
