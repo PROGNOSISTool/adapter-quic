@@ -38,8 +38,8 @@ import (
 	"time"
 
 	. "github.com/PROGNOSISTool/adapter-quic/lib"
+	_ "github.com/PROGNOSISTool/ls-qpack-go"
 	"github.com/PROGNOSISTool/pigotls"
-	_ "github.com/mpiraux/ls-qpack-go"
 )
 
 // TODO: Reconsider the use of global variables
