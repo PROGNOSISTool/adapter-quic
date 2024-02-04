@@ -5,8 +5,6 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/tiferrei/quic-tracker/qlog"
-	"github.com/tiferrei/pigotls"
 	"log"
 	"net"
 	"os"
@@ -15,6 +13,9 @@ import (
 	"sync"
 	"time"
 	"unsafe"
+
+	"github.com/PROGNOSISTool/adapter-quic/qlog"
+	"github.com/PROGNOSISTool/pigotls"
 )
 
 type Connection struct {

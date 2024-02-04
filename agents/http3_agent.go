@@ -2,9 +2,10 @@ package agents
 
 import (
 	"bytes"
-	. "github.com/tiferrei/quic-tracker"
-	"github.com/tiferrei/quic-tracker/http3"
 	"math"
+
+	. "github.com/PROGNOSISTool/adapter-quic"
+	"github.com/PROGNOSISTool/adapter-quic/http3"
 )
 
 type HTTP3Response struct {

@@ -2,9 +2,10 @@ package agents
 
 import (
 	"bytes"
-	cmp "github.com/google/go-cmp/cmp"
-	. "github.com/tiferrei/quic-tracker"
 	"unsafe"
+
+	. "github.com/PROGNOSISTool/adapter-quic"
+	cmp "github.com/google/go-cmp/cmp"
 )
 
 // The ParsingAgent is responsible for decrypting and parsing the payloads received in UDP datagrams. It also decrypts

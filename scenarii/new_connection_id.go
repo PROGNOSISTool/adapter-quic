@@ -3,7 +3,8 @@ package scenarii
 import (
 	"bytes"
 	"fmt"
-	qt "github.com/tiferrei/quic-tracker"
+
+	qt "github.com/PROGNOSISTool/adapter-quic"
 
 	"crypto/rand"
 	"encoding/hex"

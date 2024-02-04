@@ -2,12 +2,13 @@ package adapter
 
 import (
 	"fmt"
-	mapset "github.com/tiferrei/golang-set"
-	qt "github.com/tiferrei/quic-tracker"
 	"regexp"
 	"sort"
 	"strconv"
 	"strings"
+
+	qt "github.com/PROGNOSISTool/adapter-quic"
+	mapset "github.com/PROGNOSISTool/golang-set"
 )
 
 var packetTypeToString = map[qt.PacketType]string {

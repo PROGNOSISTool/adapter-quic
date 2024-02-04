@@ -1,8 +1,9 @@
 package agents
 
 import (
-	. "github.com/tiferrei/quic-tracker"
 	"sync"
+
+	. "github.com/PROGNOSISTool/adapter-quic"
 )
 
 // The SendingAgent is responsible of bundling frames for sending from other agents into packets. If the frames queued

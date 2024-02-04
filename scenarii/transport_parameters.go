@@ -2,8 +2,9 @@ package scenarii
 
 import (
 	"encoding/binary"
-	qt "github.com/tiferrei/quic-tracker"
 	"time"
+
+	qt "github.com/PROGNOSISTool/adapter-quic"
 )
 
 const (

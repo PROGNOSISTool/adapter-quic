@@ -1,8 +1,9 @@
 package agents
 
 import (
-	. "github.com/tiferrei/quic-tracker"
 	"time"
+
+	. "github.com/PROGNOSISTool/adapter-quic"
 )
 
 // The ClosingAgent is responsible for keeping track of events that can close the connection, such as the idle timeout.

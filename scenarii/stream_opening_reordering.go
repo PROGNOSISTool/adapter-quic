@@ -2,8 +2,9 @@ package scenarii
 
 import (
 	"fmt"
-	qt "github.com/tiferrei/quic-tracker"
 	"strings"
+
+	qt "github.com/PROGNOSISTool/adapter-quic"
 
 	"time"
 )

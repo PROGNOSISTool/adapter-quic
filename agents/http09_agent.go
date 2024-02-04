@@ -1,7 +1,7 @@
 package agents
 
 import (
-	. "github.com/tiferrei/quic-tracker"
+	. "github.com/PROGNOSISTool/adapter-quic"
 )
 
 type HTTPAgent interface {

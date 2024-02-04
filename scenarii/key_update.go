@@ -1,8 +1,8 @@
 package scenarii
 
 import (
-	qt "github.com/tiferrei/quic-tracker"
-	"github.com/tiferrei/pigotls"
+	qt "github.com/PROGNOSISTool/adapter-quic"
+	"github.com/PROGNOSISTool/pigotls"
 )
 
 const (

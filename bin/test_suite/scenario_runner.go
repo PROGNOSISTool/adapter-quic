@@ -3,12 +3,13 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	qt "github.com/tiferrei/quic-tracker"
-	s "github.com/tiferrei/quic-tracker/scenarii"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
+
+	qt "github.com/PROGNOSISTool/adapter-quic"
+	s "github.com/PROGNOSISTool/adapter-quic/scenarii"
 )
 
 func main() {

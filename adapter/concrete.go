@@ -3,11 +3,12 @@ package adapter
 import (
 	"encoding/json"
 	"fmt"
-	ms "github.com/tiferrei/golang-set"
-	qt "github.com/tiferrei/quic-tracker"
 	"log"
 	"sort"
 	"strings"
+
+	qt "github.com/PROGNOSISTool/adapter-quic"
+	ms "github.com/PROGNOSISTool/golang-set"
 )
 
 type ConcreteSymbol struct {

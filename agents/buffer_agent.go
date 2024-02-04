@@ -1,9 +1,9 @@
 package agents
 
 import (
-	. "github.com/tiferrei/quic-tracker"
-	"github.com/tiferrei/quic-tracker/qlog"
-	qt2qlog "github.com/tiferrei/quic-tracker/qlog/qt2qlog"
+	. "github.com/PROGNOSISTool/adapter-quic"
+	"github.com/PROGNOSISTool/adapter-quic/qlog"
+	qt2qlog "github.com/PROGNOSISTool/adapter-quic/qlog/qt2qlog"
 )
 
 // The BufferAgent is in charge of waiting for a given decryption level to become available before putting

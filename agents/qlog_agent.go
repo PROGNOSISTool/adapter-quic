@@ -1,10 +1,11 @@
 package agents
 
 import (
-	. "github.com/tiferrei/quic-tracker"
-	"github.com/tiferrei/quic-tracker/qlog"
-	"github.com/tiferrei/quic-tracker/qlog/qt2qlog"
 	"time"
+
+	. "github.com/PROGNOSISTool/adapter-quic"
+	"github.com/PROGNOSISTool/adapter-quic/qlog"
+	"github.com/PROGNOSISTool/adapter-quic/qlog/qt2qlog"
 )
 
 type QLogAgent struct {

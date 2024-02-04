@@ -3,9 +3,10 @@ package http3
 import (
 	"bytes"
 	"fmt"
-	. "github.com/tiferrei/quic-tracker"
-	"github.com/tiferrei/quic-tracker/lib"
 	"io"
+
+	. "github.com/PROGNOSISTool/adapter-quic"
+	"github.com/PROGNOSISTool/adapter-quic/lib"
 )
 
 const (

@@ -1,10 +1,11 @@
 package adapter
 
 import (
-    "fmt"
-    "gopkg.in/yaml.v3"
-    "io/ioutil"
-    "time"
+	"fmt"
+	"io/ioutil"
+	"time"
+
+	"gopkg.in/yaml.v3"
 )
 
 type Config struct {

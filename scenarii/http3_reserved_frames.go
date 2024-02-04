@@ -2,9 +2,10 @@ package scenarii
 
 import (
 	"bytes"
-	qt "github.com/tiferrei/quic-tracker"
-	"github.com/tiferrei/quic-tracker/agents"
-	"github.com/tiferrei/quic-tracker/http3"
+
+	qt "github.com/PROGNOSISTool/adapter-quic"
+	"github.com/PROGNOSISTool/adapter-quic/agents"
+	"github.com/PROGNOSISTool/adapter-quic/http3"
 )
 
 const (

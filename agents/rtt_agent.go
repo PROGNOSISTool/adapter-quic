@@ -1,10 +1,11 @@
 package agents
 
 import (
-	. "github.com/tiferrei/quic-tracker"
-	"github.com/tiferrei/quic-tracker/qlog"
-	"time"
 	"math"
+	"time"
+
+	. "github.com/PROGNOSISTool/adapter-quic"
+	"github.com/PROGNOSISTool/adapter-quic/qlog"
 )
 
 type RTTAgent struct {

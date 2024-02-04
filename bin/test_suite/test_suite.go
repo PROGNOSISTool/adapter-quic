@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	qt "github.com/tiferrei/quic-tracker"
-	"github.com/tiferrei/quic-tracker/scenarii"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -17,6 +15,9 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	qt "github.com/PROGNOSISTool/adapter-quic"
+	"github.com/PROGNOSISTool/adapter-quic/scenarii"
 )
 
 func main() {

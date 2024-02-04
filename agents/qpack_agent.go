@@ -2,9 +2,10 @@ package agents
 
 import (
 	"bytes"
-	. "github.com/tiferrei/quic-tracker"
-	"github.com/mpiraux/ls-qpack-go"
 	"math"
+
+	. "github.com/PROGNOSISTool/adapter-quic"
+	ls_qpack_go "github.com/mpiraux/ls-qpack-go"
 )
 
 type HTTPHeader struct {

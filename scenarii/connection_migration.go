@@ -2,8 +2,9 @@ package scenarii
 
 import (
 	"bytes"
-	qt "github.com/tiferrei/quic-tracker"
 	"math/rand"
+
+	qt "github.com/PROGNOSISTool/adapter-quic"
 
 	"time"
 )

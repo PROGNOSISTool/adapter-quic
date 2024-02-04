@@ -2,9 +2,10 @@ package qt2qlog
 
 import (
 	"encoding/hex"
-	. "github.com/tiferrei/quic-tracker"
-	"github.com/tiferrei/quic-tracker/qlog"
 	"strconv"
+
+	. "github.com/PROGNOSISTool/adapter-quic"
+	"github.com/PROGNOSISTool/adapter-quic/qlog"
 )
 
 var qlogPacketType = map[PacketType]string{

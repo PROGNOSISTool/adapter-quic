@@ -1,11 +1,10 @@
-//
 // QUIC-Tracker is a test suite for QUIC, built upon a minimal client implementation in Go.
 // It is currently draft-27 and TLS-1.3 compatible.
 //
 // The main package is a toolbox to parse and create QUIC packets of all types. More high-level client behaviours are
 // implemented in the package agents. Several test scenarii are implemented in the package scenarii.
 //
-// Architecture
+// # Architecture
 //
 // QUIC-Tracker is comprised of three parts.
 //
@@ -21,26 +20,26 @@
 // the package bin/test_suite. The tests results are produced in an unified JSON format. It is described in the Trace
 // type documentation.
 //
-// License and copyright
+// # License and copyright
 //
 // QUIC-Tracker is licensed under the GNU Affero General Public License version 3. You can find its terms in the
 // LICENSE file, or at https://www.gnu.org/licenses/agpl.txt.
 //
 // Copyright (C) 2017-2021  Maxime Piraux
-//
 package quictracker
 
 import (
 	"bytes"
 	"encoding/binary"
 	"encoding/hex"
-	. "github.com/tiferrei/quic-tracker/lib"
-	_ "github.com/mpiraux/ls-qpack-go"
-	"github.com/tiferrei/pigotls"
 	"io"
 	"math"
 	"net"
 	"time"
+
+	. "github.com/PROGNOSISTool/adapter-quic/lib"
+	"github.com/PROGNOSISTool/pigotls"
+	_ "github.com/mpiraux/ls-qpack-go"
 )
 
 // TODO: Reconsider the use of global variables

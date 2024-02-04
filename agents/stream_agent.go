@@ -2,7 +2,8 @@ package agents
 
 import (
 	"errors"
-	. "github.com/tiferrei/quic-tracker"
+
+	. "github.com/PROGNOSISTool/adapter-quic"
 )
 
 type StreamAgent struct {

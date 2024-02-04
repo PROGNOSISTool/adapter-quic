@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	. "github.com/tiferrei/quic-tracker"
+	. "github.com/PROGNOSISTool/adapter-quic"
 )
 
 type Agent interface {

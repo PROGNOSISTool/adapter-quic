@@ -2,11 +2,12 @@ package agents
 
 import (
 	"errors"
-	. "github.com/tiferrei/quic-tracker"
-	"github.com/tiferrei/quic-tracker/compat"
 	"syscall"
 	"time"
 	"unsafe"
+
+	. "github.com/PROGNOSISTool/adapter-quic"
+	"github.com/PROGNOSISTool/adapter-quic/compat"
 )
 
 // The SocketAgent is responsible for receiving the UDP payloads off the socket and putting them in the decryption queue.

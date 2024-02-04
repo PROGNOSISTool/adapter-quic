@@ -1,9 +1,9 @@
 package scenarii
 
 import (
-	qt "github.com/tiferrei/quic-tracker"
+	qt "github.com/PROGNOSISTool/adapter-quic"
 
-	"github.com/tiferrei/quic-tracker/agents"
+	"github.com/PROGNOSISTool/adapter-quic/agents"
 )
 
 const (

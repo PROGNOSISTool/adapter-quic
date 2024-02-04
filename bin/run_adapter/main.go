@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/tiferrei/quic-tracker/adapter"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/PROGNOSISTool/adapter-quic/adapter"
 )
 
 func main() {

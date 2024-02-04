@@ -2,7 +2,8 @@ package scenarii
 
 import (
 	"fmt"
-	qt "github.com/tiferrei/quic-tracker"
+
+	qt "github.com/PROGNOSISTool/adapter-quic"
 )
 
 const (

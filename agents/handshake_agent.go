@@ -5,9 +5,10 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	. "github.com/tiferrei/quic-tracker"
 	"strings"
 	"time"
+
+	. "github.com/PROGNOSISTool/adapter-quic"
 )
 
 type HandshakeStatus struct {

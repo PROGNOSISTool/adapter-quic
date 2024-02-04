@@ -1,8 +1,9 @@
 package agents
 
 import (
-	. "github.com/tiferrei/quic-tracker"
 	"math"
+
+	. "github.com/PROGNOSISTool/adapter-quic"
 )
 
 func min(a, b uint64) uint64 {

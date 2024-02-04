@@ -3,15 +3,16 @@ package adapter
 import (
 	"encoding/json"
 	"fmt"
-	mapset "github.com/tiferrei/golang-set"
-	qt "github.com/tiferrei/quic-tracker"
-	"github.com/tiferrei/quic-tracker/agents"
-	tcp "github.com/tiferrei/tcp_server"
 	"log"
 	"os"
-    "os/exec"
-    "strings"
+	"os/exec"
+	"strings"
 	"time"
+
+	qt "github.com/PROGNOSISTool/adapter-quic"
+	"github.com/PROGNOSISTool/adapter-quic/agents"
+	mapset "github.com/PROGNOSISTool/golang-set"
+	tcp "github.com/PROGNOSISTool/tcp_server"
 )
 
 type Adapter struct {

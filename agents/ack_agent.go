@@ -1,8 +1,9 @@
 package agents
 
 import (
-	. "github.com/tiferrei/quic-tracker"
 	"time"
+
+	. "github.com/PROGNOSISTool/adapter-quic"
 )
 
 // The AckAgent is in charge of queuing ACK frames in response to receiving packets that need to be acknowledged as well

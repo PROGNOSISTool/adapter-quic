@@ -33,9 +33,9 @@ before_install:
 
 install:
   - go get -t -v ./... || true
-  - cd $GOPATH/src/github.com/tiferrei/pigotls && make
+  - cd $GOPATH/src/github.com/PROGNOSISTool/pigotls && make
   - cd $GOPATH/src/github.com/mpiraux/ls-qpack-go && make
-  - cd $GOPATH/src/github.com/tiferrei/quic-tracker
+  - cd $GOPATH/src/github.com/PROGNOSISTool/adapter-quic
 
 script:
   - go test
